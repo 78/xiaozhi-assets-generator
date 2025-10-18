@@ -454,7 +454,7 @@ class GifScaler {
         quality: this.options.quality,
         width: this.targetWidth,
         height: this.targetHeight,
-        transparent: 'rgba(255, 0, 255, 0)',
+        // transparent: 'rgba(255, 0, 255, 0)',
         repeat: this.gifRepeat !== undefined ? this.gifRepeat : 0,  // 0表示无限循环
         workerScript: this.options.workerScript  // 指定 worker 脚本路径
         // gif.js 会自动处理透明像素，不需要手动设置 transparent 选项
