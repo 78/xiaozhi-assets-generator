@@ -355,6 +355,44 @@ class SpiffsGenerator {
   }
 
   /**
+   * 打印打包的文件列表
+   */
+  printFileList() {
+    console.log('=== 打包文件列表 ===')
+    console.log(`总文件数: ${this.files.length}`)
+
+    if (this.files.length === 0) {
+      console.log('暂无文件')
+      return
+    }
+
+    // 按扩展名和文件名排序后打印
+    const sortedFiles = this.sortFiles(this.files)
+
+    sortedFiles.forEach((file, index) => {
+      const ext = file.filename.split('.').pop()?.toLowerCase() || 'unknown'
+      const sizeKB = (file.size / 1024).toFixed(2)
+      const dimensions = (file.width && file.height) ? `${file.width}x${file.height}` : 'N/A'
+
+      console.log(`${String(index + 1).padStart(3, ' ')}. ${file.filename}`)
+      console.log(`    类型: ${ext.toUpperCase()}`)
+      console.log(`    大小: ${sizeKB} KB (${file.size} 字节)`)
+      console.log(`    尺寸: ${dimensions}`)
+      console.log('')
+    })
+
+    // 打印统计信息
+    const stats = this.getStats()
+    console.log('=== 文件统计 ===')
+    console.log(`总大小: ${(stats.totalSize / 1024).toFixed(2)} KB`)
+    console.log(`平均大小: ${(stats.averageFileSize / 1024).toFixed(2)} KB`)
+    console.log('文件类型分布:')
+    Object.entries(stats.fileTypes).forEach(([ext, count]) => {
+      console.log(`  ${ext.toUpperCase()}: ${count} 个文件`)
+    })
+  }
+
+  /**
    * 清理文件列表
    */
   clear() {

@@ -71,11 +71,9 @@ class ConfigStorage {
   /**
    * 保存配置到 IndexedDB
    * @param {Object} config - 完整的配置对象
-   * @param {number} currentStep - 当前步骤
-   * @param {string} activeThemeTab - 活动的主题标签
    * @returns {Promise<void>}
    */
-  async saveConfig(config, currentStep = 0, activeThemeTab = 'wakeword') {
+  async saveConfig(config) {
     if (!this.initialized) {
       await this.initialize()
     }
@@ -85,8 +83,6 @@ class ConfigStorage {
     const configData = {
       key: 'current_config',
       config: sanitizedConfig, // 深拷贝并剔除不可序列化字段
-      currentStep,
-      activeThemeTab,
       timestamp: Date.now()
     }
 
@@ -122,16 +118,33 @@ class ConfigStorage {
         cloned.theme.font.custom.file = null
       }
 
-      // 表情图片
+      // 表情图片（支持新的 hash 去重结构）
       if (cloned?.theme?.emoji?.type === 'custom') {
+        if (!cloned.theme.emoji.custom) cloned.theme.emoji.custom = {}
+        
+        // 保留旧结构的 images（置为 null）
         const images = cloned.theme.emoji?.custom?.images || {}
         const sanitizedImages = {}
         Object.keys(images).forEach((k) => {
-          // 无论反序列化为何形态，都统一置为 null，表示待恢复
           sanitizedImages[k] = null
         })
-        if (!cloned.theme.emoji.custom) cloned.theme.emoji.custom = {}
         cloned.theme.emoji.custom.images = sanitizedImages
+        
+        // 保留新结构的 emotionMap（emotion -> hash 映射）
+        if (cloned.theme.emoji.custom.emotionMap) {
+          // emotionMap 只包含字符串映射，可以直接保留
+          // 不需要处理，因为它不包含 File 对象
+        }
+        
+        // 清理 fileMap（hash -> File 映射），将 File 对象置为 null
+        if (cloned.theme.emoji.custom.fileMap) {
+          const fileMap = cloned.theme.emoji.custom.fileMap
+          const sanitizedFileMap = {}
+          Object.keys(fileMap).forEach((hash) => {
+            sanitizedFileMap[hash] = null
+          })
+          cloned.theme.emoji.custom.fileMap = sanitizedFileMap
+        }
       }
 
       // 背景图片
@@ -173,8 +186,6 @@ class ConfigStorage {
           console.log('从 IndexedDB 恢复配置成功')
           resolve({
             config: result.config,
-            currentStep: result.currentStep || 0,
-            activeThemeTab: result.activeThemeTab || 'wakeword',
             timestamp: result.timestamp
           })
         } else {

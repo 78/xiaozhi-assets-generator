@@ -166,44 +166,8 @@
         </div>
       </div>
 
-      <!-- 自定义字体预览 -->
-      <div v-if="modelValue.custom.file" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h5 class="font-medium text-blue-900 mb-2">字体配置预览</h5>
-        <div class="text-sm text-blue-800 space-y-1">
-          <div>字体文件: {{ modelValue.custom.file.name }}</div>
-          <div>字号: {{ localCustom.size }}px</div>
-          <div>位深: {{ localCustom.bpp }}bpp</div>
-          <div>字符集: {{ 
-            localCustom.charset === 'deepseek' ? 'DeepSeek R1' : 
-            localCustom.charset === 'gb2312' ? 'GB2312' : 
-            localCustom.charset === 'latin' ? 'Latin1' : 
-            localCustom.charset 
-          }}</div>
-          <div class="text-xs text-blue-600 mt-2">
-            输出文件名: font_custom_{{ localCustom.size }}_{{ localCustom.bpp }}.bin
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- 当前配置状态 -->
-    <div v-if="hasValidConfig" class="bg-green-50 border border-green-200 rounded-lg p-4">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h4 class="text-sm font-medium text-green-800">
-            字体配置完成
-          </h4>
-          <div class="mt-1 text-sm text-green-700">
-            {{ getConfigSummary() }}
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -263,29 +227,28 @@ const localCustom = ref({
   charset: 'deepseek'
 })
 
-const hasValidConfig = computed(() => {
-  return props.modelValue.preset || props.modelValue.custom.file
-})
 
 const setFontType = (type) => {
+  // 切换字体类型时，保留自定义字体配置数据
   emit('update:modelValue', {
     ...props.modelValue,
     type,
-    preset: type === 'preset' ? props.modelValue.preset : '',
+    preset: type === 'preset' ? (props.modelValue.preset || 'font_puhui_deepseek_20_4') : '',
     custom: {
       ...props.modelValue.custom,
-      file: type === 'custom' ? props.modelValue.custom.file : null
+      file: props.modelValue.custom.file || null
     }
   })
 }
 
 const selectPresetFont = (id) => {
+  // 选择预设字体时，保留自定义字体配置数据
   emit('update:modelValue', {
     ...props.modelValue,
     preset: id,
     custom: {
       ...props.modelValue.custom,
-      file: null
+      file: props.modelValue.custom.file || null
     }
   })
 }
@@ -339,15 +302,6 @@ const clearFile = async () => {
   await StorageHelper.deleteFontFile()
 }
 
-const getConfigSummary = () => {
-  if (props.modelValue.type === 'preset') {
-    const preset = presetFonts.find(f => f.id === props.modelValue.preset)
-    return preset ? `使用预设字体: ${preset.name}` : ''
-  } else {
-    const file = props.modelValue.custom.file
-    return file ? `自定义字体: ${file.name} (${localCustom.value.size}px, ${localCustom.value.bpp}bpp)` : ''
-  }
-}
 
 // 防止循环更新的标志
 const isUpdatingFromProps = ref(false)

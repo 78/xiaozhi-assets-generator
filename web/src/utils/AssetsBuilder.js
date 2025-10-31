@@ -13,7 +13,7 @@
 import browserFontConverter from './font_conv/BrowserFontConverter.js'
 import WakenetModelPacker from './WakenetModelPacker.js'
 import SpiffsGenerator from './SpiffsGenerator.js'
-import GifScaler from './GifScaler.js'
+import WasmGifScaler from './WasmGifScaler.js'
 import configStorage from './ConfigStorage.js'
 
 class AssetsBuilder {
@@ -25,11 +25,13 @@ class AssetsBuilder {
     this.convertedFonts = new Map() // 缓存转换后的字体
     this.wakenetPacker = new WakenetModelPacker() // 唤醒词模型打包器
     this.spiffsGenerator = new SpiffsGenerator() // SPIFFS 生成器
-    this.gifScaler = new GifScaler({ 
-      quality: 10, 
+    this.gifScaler = new WasmGifScaler({ 
+      quality: 30, 
       debug: true,
-      scalingMode: 'auto'  // 自动选择最佳缩放模式
-    }) // GIF 缩放器
+      scalingMode: 'auto',  // 自动选择最佳缩放模式
+      optimize: true,       // 启用 GIF 优化
+      optimizationLevel: 2  // 优化级别 (1-3)
+    }) // WASM GIF 缩放器
     this.configStorage = configStorage // 配置存储管理器
     this.autoSaveEnabled = true // 是否启用自动保存
   }
@@ -176,19 +178,85 @@ class AssetsBuilder {
       }
     }
 
-    // 恢复自定义表情图片
-    if (config.theme?.emoji?.type === 'custom' && config.theme.emoji.custom?.images) {
-      for (const [emojiName, file] of Object.entries(config.theme.emoji.custom.images)) {
-        if (file === null) {
-          const emojiKey = `emoji_${emojiName}`
-          if (await this.restoreResourceFromStorage(emojiKey)) {
-            const resource = this.resources.get(emojiKey)
+    // 恢复自定义表情图片（支持新的 hash 去重结构）
+    if (config.theme?.emoji?.type === 'custom' && config.theme.emoji.custom) {
+      const emojiCustom = config.theme.emoji.custom
+      const emotionMap = emojiCustom.emotionMap || {}
+      const fileMap = emojiCustom.fileMap || {}
+      const images = emojiCustom.images || {}
+      
+      // 如果存在新结构（emotionMap 和 fileMap），使用新结构恢复
+      if (Object.keys(emotionMap).length > 0 || Object.keys(fileMap).length > 0) {
+        // 收集所有需要恢复的 hash
+        const hashesToRestore = new Set()
+        
+        // 从 fileMap 中收集所有 hash
+        for (const hash of Object.keys(fileMap)) {
+          if (fileMap[hash] === null) {
+            hashesToRestore.add(hash)
+          }
+        }
+        
+        // 恢复每个唯一的文件（按 hash）
+        for (const hash of hashesToRestore) {
+          let fileKey = `hash_${hash}`
+          let restored = await this.restoreResourceFromStorage(fileKey)
+          
+          // 如果新格式恢复失败，尝试旧格式（兼容性处理）
+          if (!restored) {
+            const oldKey = `emoji_hash_${hash}`
+            restored = await this.restoreResourceFromStorage(oldKey)
+            if (restored) {
+              fileKey = oldKey
+            }
+          }
+          
+          if (restored) {
+            const resource = this.resources.get(fileKey)
             if (resource) {
-              config.theme.emoji.custom.images[emojiName] = resource.file
-              restoredFiles.push(`表情 ${emojiName}: ${resource.filename}`)
+              // 更新 fileMap
+              fileMap[hash] = resource.file
+              
+              // 找到所有使用该 hash 的表情
+              const emotionsUsingHash = Object.entries(emotionMap)
+                .filter(([_, h]) => h === hash)
+                .map(([emotion, _]) => emotion)
+              
+              // 更新所有使用该文件的表情的 images
+              emotionsUsingHash.forEach(emotion => {
+                images[emotion] = resource.file
+              })
+              
+              restoredFiles.push(`表情文件 ${hash.substring(0, 8)}... (用于: ${emotionsUsingHash.join(', ')})`)
             }
           }
         }
+        
+        // 直接修改原始对象（保持响应式）
+        // 逐个更新 fileMap
+        Object.keys(fileMap).forEach(hash => {
+          config.theme.emoji.custom.fileMap[hash] = fileMap[hash]
+        })
+        
+        // 逐个更新 images
+        Object.keys(images).forEach(emotion => {
+          config.theme.emoji.custom.images[emotion] = images[emotion]
+        })
+      } else {
+        // 兼容旧结构：逐个恢复表情文件
+        for (const [emojiName, file] of Object.entries(images)) {
+          if (file === null) {
+            const emojiKey = `emoji_${emojiName}`
+            if (await this.restoreResourceFromStorage(emojiKey)) {
+              const resource = this.resources.get(emojiKey)
+              if (resource) {
+                images[emojiName] = resource.file
+                restoredFiles.push(`表情 ${emojiName}: ${resource.filename}`)
+              }
+            }
+          }
+        }
+        config.theme.emoji.custom.images = images
       }
     }
 
@@ -328,22 +396,46 @@ class AssetsBuilder {
         })
       })
     } else if (emoji.type === 'custom') {
-      // 自定义表情包
+      // 自定义表情包（支持文件去重）
       const images = emoji.custom.images || {}
+      const emotionMap = emoji.custom.emotionMap || {}
+      const fileMap = emoji.custom.fileMap || {}
       const size = emoji.custom.size || { width: 64, height: 64 }
       
-      Object.entries(images).forEach(([name, file]) => {
+      // 必须使用新的 hash 映射结构
+      if (Object.keys(emotionMap).length === 0 || Object.keys(fileMap).length === 0) {
+        console.error('❌ 错误：检测到旧版本的表情数据结构')
+        console.error('请清除浏览器缓存或重置配置，然后重新上传表情图片')
+        throw new Error('不兼容的表情数据结构：缺少 fileMap 或 emotionMap。请重新配置表情。')
+      }
+      
+      // 创建 hash 到文件名的映射（用于去重）
+      const hashToFilename = new Map()
+      
+      Object.entries(emotionMap).forEach(([emotionName, fileHash]) => {
+        const file = fileMap[fileHash]
         if (file) {
-          // 根据实际文件扩展名生成文件名
-          const fileExtension = file.name ? file.name.split('.').pop().toLowerCase() : 'png'
+          // 为每个唯一的文件 hash 生成一个共享的文件名
+          if (!hashToFilename.has(fileHash)) {
+            const fileExtension = file.name ? file.name.split('.').pop().toLowerCase() : 'png'
+            // 使用 hash 前8位作为文件名，确保唯一性
+            const sharedFilename = `emoji_${fileHash.substring(0, 8)}.${fileExtension}`
+            hashToFilename.set(fileHash, sharedFilename)
+          }
+          
+          const sharedFilename = hashToFilename.get(fileHash)
+          
           collection.push({
-            name,
-            file: `${name}.${fileExtension}`,
+            name: emotionName,
+            file: sharedFilename,  // 多个表情可能指向同一个文件
             source: file,
+            fileHash,  // 保留 hash 信息用于去重处理
             size: { ...size }
           })
         }
       })
+      
+      console.log(`表情去重：${Object.keys(emotionMap).length} 个表情使用了 ${hashToFilename.size} 个不同的图片文件`)
       
       // 确保至少有 neutral 表情
       if (!collection.find(item => item.name === 'neutral')) {
@@ -476,15 +568,29 @@ class AssetsBuilder {
       })
     }
 
-    // 添加表情文件
+    // 添加表情文件（去重处理）
     const emojiCollection = this.getEmojiCollectionInfo()
+    const addedFileHashes = new Set()  // 跟踪已添加的文件 hash
+    
     emojiCollection.forEach(emoji => {
+      // 如果有 fileHash（自定义表情且使用新结构），检查是否已添加
+      if (emoji.fileHash) {
+        if (addedFileHashes.has(emoji.fileHash)) {
+          // 文件已添加，跳过（但保留在 index.json 的 emoji_collection 中）
+          console.log(`跳过重复文件: ${emoji.name} -> ${emoji.file} (hash: ${emoji.fileHash.substring(0, 8)})`)
+          return
+        }
+        addedFileHashes.add(emoji.fileHash)
+      }
+      
+      // 添加唯一的文件
       resources.files.push({
         type: 'emoji',
         name: emoji.name,
         filename: emoji.file,
         source: emoji.source,
-        size: emoji.size
+        size: emoji.size,
+        fileHash: emoji.fileHash  // 传递 hash 信息
       })
     })
 
@@ -595,6 +701,9 @@ class AssetsBuilder {
       
       await new Promise(resolve => setTimeout(resolve, 100))
       if (progressCallback) progressCallback(90, '生成最终文件...')
+
+      // Print file list
+      this.spiffsGenerator.printFileList()
       
       // 生成最终的 assets.bin
       const assetsBinData = await this.spiffsGenerator.generate((progress, message) => {
@@ -830,6 +939,9 @@ class AssetsBuilder {
    * @param {Object} resource - 资源配置
    */
   async processEmojiFile(resource) {
+    // 注意：文件去重已在 preparePackageResources() 阶段完成
+    // 这里处理的每个文件都是唯一的
+    
     let imageData
     let needsScaling = false
     let imageFormat = 'png' // 默认格式
@@ -853,7 +965,7 @@ class AssetsBuilder {
       // 检查图片实际尺寸
       try {
         const actualDimensions = await this.getImageDimensions(file)
-        const targetSize = resource.size || { width: 32, height: 32 }
+        const targetSize = resource.size || { width: 64, height: 64 }
         
         // 如果实际尺寸超出目标尺寸范围，需要缩放
         if (actualDimensions.width > targetSize.width || 
@@ -874,15 +986,16 @@ class AssetsBuilder {
     // 如果需要缩放，根据文件类型选择缩放方法
     if (needsScaling) {
       try {
-        const targetSize = resource.size || { width: 32, height: 32 }
+        const targetSize = resource.size || { width: 64, height: 64 }
         
         if (isGif) {
-          // 使用 GifScaler 处理 GIF 文件
-          console.log(`使用 GifScaler 处理 GIF 表情: ${resource.name}`)
+          // 使用 WasmGifScaler 处理 GIF 文件
+          console.log(`使用 WasmGifScaler 处理 GIF 表情: ${resource.name}`)
           const scaledGifBlob = await this.gifScaler.scaleGif(resource.source, {
             maxWidth: targetSize.width,
             maxHeight: targetSize.height,
-            keepAspectRatio: true
+            keepAspectRatio: true,
+            lossy: 30  // 使用 lossy 压缩减小文件大小
           })
           imageData = await this.fileToArrayBuffer(scaledGifBlob)
         } else {
@@ -896,10 +1009,16 @@ class AssetsBuilder {
       }
     }
     
+    // 添加文件到 SPIFFS
     this.spiffsGenerator.addFile(resource.filename, imageData, {
       width: resource.size?.width || 0,
       height: resource.size?.height || 0
     })
+    
+    // 记录处理日志
+    if (resource.fileHash) {
+      console.log(`已添加表情文件: ${resource.filename} (hash: ${resource.fileHash.substring(0, 8)})`)
+    }
   }
 
   /**
@@ -1223,7 +1342,7 @@ class AssetsBuilder {
     this.convertedFonts.clear()
     this.wakenetPacker.clear()
     this.spiffsGenerator.clear()
-    this.gifScaler.dispose() // 清理 GifScaler 资源
+    this.gifScaler.dispose() // 清理 WasmGifScaler 资源
   }
 
   /**

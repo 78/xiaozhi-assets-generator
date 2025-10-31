@@ -97,7 +97,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- 图片尺寸 -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">图片宽度 (px)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">最大图片宽度 (px)</label>
           <input
             type="number"
             v-model.number="localCustom.size.width"
@@ -108,7 +108,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">图片高度 (px)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">最大图片高度 (px)</label>
           <input
             type="number"
             v-model.number="localCustom.size.height"
@@ -121,7 +121,7 @@
 
       <!-- 表情图片上传 -->
       <div class="space-y-4">
-        <h5 class="font-medium text-gray-900">上传表情图片</h5>
+        <h5 class="font-medium text-gray-900">上传表情图片（GIF 需要 PSRAM）</h5>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           <div
             v-for="emotion in emotionList"
@@ -130,8 +130,10 @@
           >
             <div class="text-center">
               <div class="text-lg mb-1">{{ emotion.emoji }}</div>
-              <div class="text-xs text-gray-600">{{ emotion.name }}</div>
-              <div v-if="emotion.key === 'neutral'" class="text-xs text-red-500">必需</div>
+              <div class="text-xs text-gray-600 flex items-center justify-center gap-1">
+                <span>{{ emotion.name }}</span>
+                <span v-if="emotion.key === 'neutral'" class="text-red-500">必需</span>
+              </div>
             </div>
             
             <div 
@@ -159,7 +161,7 @@
                 <svg class="w-6 h-6 text-gray-400 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                 </svg>
-                <div class="text-xs text-gray-500">点击上传</div>
+                <div class="text-xs text-gray-500">点击上传或拖拽到此处</div>
               </div>
               
               <div v-else class="w-full h-full relative">
@@ -186,23 +188,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 当前配置状态 -->
-    <div v-if="hasValidConfig" class="bg-green-50 border border-green-200 rounded-lg p-4">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h4 class="text-sm font-medium text-green-800">表情配置完成</h4>
-          <div class="mt-1 text-sm text-green-700">
-            {{ getConfigSummary() }}
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -218,6 +203,19 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+
+/**
+ * 计算文件的 SHA-256 hash
+ * @param {File} file - 文件对象
+ * @returns {Promise<string>} 文件的 hash 值
+ */
+const calculateFileHash = async (file) => {
+  const buffer = await file.arrayBuffer()
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  return hashHex
+}
 
 const presetEmojis = [
   {
@@ -264,10 +262,6 @@ const localCustom = ref({
   size: { width: 32, height: 32 }
 })
 
-const hasValidConfig = computed(() => {
-  return props.modelValue.preset || props.modelValue.custom.images.neutral
-})
-
 const setEmojiType = (type) => {
   // 避免重复设置相同类型
   if (props.modelValue.type === type) return
@@ -275,10 +269,11 @@ const setEmojiType = (type) => {
   const newValue = { ...props.modelValue, type }
   
   if (type === 'preset') {
+    // 切换到预设表情时，保留自定义表情数据
     newValue.preset = props.modelValue.preset || 'twemoji32'
     newValue.custom = {
       ...props.modelValue.custom,
-      images: {}
+      images: props.modelValue.custom.images || {}
     }
   } else if (type === 'custom') {
     newValue.preset = ''
@@ -295,12 +290,13 @@ const selectPresetEmoji = (id) => {
   // 避免重复选择相同预设
   if (props.modelValue.preset === id) return
   
+  // 选择不同的预设表情包时，保留自定义表情数据
   emit('update:modelValue', {
     ...props.modelValue,
     preset: id,
     custom: {
       ...props.modelValue.custom,
-      images: {}
+      images: props.modelValue.custom.images || {}
     }
   })
 }
@@ -324,43 +320,92 @@ const updateEmojiImage = async (emotionKey, file) => {
   const validFormats = ['png', 'gif']
   const fileExtension = file.name.split('.').pop().toLowerCase()
   
-  if (validFormats.includes(fileExtension)) {
-    emit('update:modelValue', {
-      ...props.modelValue,
-      custom: {
-        ...props.modelValue.custom,
-        size: localCustom.value.size,
-        images: {
-          ...props.modelValue.custom.images,
-          [emotionKey]: file
-        }
-      }
-    })
-
-    // 自动保存表情文件到存储
-    await StorageHelper.saveEmojiFile(emotionKey, file, {
-      size: localCustom.value.size,
-      format: fileExtension
-    })
-  } else {
+  if (!validFormats.includes(fileExtension)) {
     alert('请选择有效的PNG或GIF格式图片')
+    return
   }
-}
 
-const removeImage = async (emotionKey) => {
-  const newImages = { ...props.modelValue.custom.images }
-  delete newImages[emotionKey]
+  // 计算文件 hash
+  const fileHash = await calculateFileHash(file)
+  
+  // 获取或初始化 fileMap 和 emotionMap
+  const currentCustom = props.modelValue.custom || {}
+  const fileMap = { ...(currentCustom.fileMap || {}) }
+  const emotionMap = { ...(currentCustom.emotionMap || {}) }
+  const images = { ...(currentCustom.images || {}) }
+  
+  // 检查是否已经存在相同的文件
+  let existingEmotions = []
+  for (const [emotion, hash] of Object.entries(emotionMap)) {
+    if (hash === fileHash && emotion !== emotionKey) {
+      existingEmotions.push(emotion)
+    }
+  }
+  
+  // 如果检测到相同文件，提示用户
+  if (existingEmotions.length > 0) {
+    console.log(`表情 ${emotionKey} 使用了与 ${existingEmotions.join(', ')} 相同的图片文件（共享存储）`)
+  }
+  
+  // 更新映射关系
+  fileMap[fileHash] = file
+  emotionMap[emotionKey] = fileHash
+  images[emotionKey] = file  // 保持向后兼容
   
   emit('update:modelValue', {
     ...props.modelValue,
     custom: {
-      ...props.modelValue.custom,
-      images: newImages
+      ...currentCustom,
+      size: localCustom.value.size,
+      images,
+      fileMap,      // 新增：hash -> File
+      emotionMap    // 新增：emotion -> hash
     }
   })
 
-  // 删除存储中的表情文件
-  await StorageHelper.deleteEmojiFile(emotionKey)
+  // 自动保存表情文件到存储（按 hash 保存，避免重复）
+  await StorageHelper.saveEmojiFile(`hash_${fileHash}`, file, {
+    size: localCustom.value.size,
+    format: fileExtension,
+    emotions: [...existingEmotions, emotionKey]  // 记录使用该文件的所有表情
+  })
+}
+
+const removeImage = async (emotionKey) => {
+  const currentCustom = props.modelValue.custom || {}
+  const newImages = { ...currentCustom.images }
+  const newEmotionMap = { ...(currentCustom.emotionMap || {}) }
+  const newFileMap = { ...(currentCustom.fileMap || {}) }
+  
+  // 获取要删除的表情对应的 hash
+  const fileHash = newEmotionMap[emotionKey]
+  
+  // 删除表情到 hash 的映射
+  delete newImages[emotionKey]
+  delete newEmotionMap[emotionKey]
+  
+  // 检查是否还有其他表情使用同一个文件
+  const otherEmotionsUsingFile = Object.values(newEmotionMap).filter(h => h === fileHash)
+  
+  // 如果没有其他表情使用这个文件，则删除文件本身
+  if (otherEmotionsUsingFile.length === 0 && fileHash) {
+    delete newFileMap[fileHash]
+    // 删除存储中的文件
+    await StorageHelper.deleteEmojiFile(`hash_${fileHash}`)
+    console.log(`文件 ${fileHash} 已删除（无其他表情引用）`)
+  } else {
+    console.log(`文件 ${fileHash} 仍被其他表情使用，保留文件`)
+  }
+  
+  emit('update:modelValue', {
+    ...props.modelValue,
+    custom: {
+      ...currentCustom,
+      images: newImages,
+      emotionMap: newEmotionMap,
+      fileMap: newFileMap
+    }
+  })
 }
 
 const getPresetEmojiUrl = (packId, emotion) => {
@@ -385,17 +430,6 @@ const handleImageError = (event) => {
   console.warn('Failed to load emoji image:', event.target.src)
   // 可以设置一个默认的fallback图片
   event.target.style.display = 'none'
-}
-
-const getConfigSummary = () => {
-  if (props.modelValue.type === 'preset') {
-    const preset = presetEmojis.find(p => p.id === props.modelValue.preset)
-    return preset ? `使用预设表情包: ${preset.name}` : ''
-  } else {
-    const imageCount = Object.keys(props.modelValue.custom.images).length
-    const size = localCustom.value.size
-    return `自定义表情包: ${imageCount} 张图片 (${size.width}×${size.height}px)`
-  }
 }
 
 // 移除可能导致无限递归的 watch

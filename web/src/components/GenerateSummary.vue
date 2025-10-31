@@ -551,7 +551,7 @@ onUnmounted(() => {
 
 .emoji-image {
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .emoji-fallback {

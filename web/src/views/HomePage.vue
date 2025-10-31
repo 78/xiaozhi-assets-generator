@@ -90,7 +90,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import ChipConfig from '@/components/ChipConfig.vue'
 import ThemeDesign from '@/components/ThemeDesign.vue'
 import GenerateSummary from '@/components/GenerateSummary.vue'
@@ -98,6 +98,12 @@ import GenerateModal from '@/components/GenerateModal.vue'
 import configStorage from '@/utils/ConfigStorage.js'
 import AssetsBuilder from '@/utils/AssetsBuilder.js'
 import WebSocketTransfer from '@/utils/WebSocketTransfer.js'
+import { useDeviceStatus } from '@/composables/useDeviceStatus.js'
+
+// 使用共享的设备状态
+const {
+  callMcpTool: callDeviceMcpTool
+} = useDeviceStatus()
 
 const currentStep = ref(0)
 const showGenerateModal = ref(false)
@@ -125,8 +131,7 @@ const config = ref({
       width: 320,
       height: 240,
       color: 'RGB565'
-    },
-    preset: ''
+    }
   },
   theme: {
     wakeword: '',
@@ -145,7 +150,6 @@ const config = ref({
       preset: '',
       custom: {
         size: { width: 160, height: 120 },
-        format: 'png',
         images: {}
       }
     },
@@ -209,37 +213,9 @@ const getToken = () => {
   return urlParams.get('token')
 }
 
-// 调用MCP工具
+// 调用MCP工具（使用共享的方法）
 const callMcpTool = async (toolName, params = {}) => {
-  try {
-    const token = getToken()
-    if (!token) {
-      throw new Error('未找到认证令牌')
-    }
-
-    const response = await fetch('/api/messaging/device/tools/call', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        name: toolName,
-        arguments: params
-      })
-    })
-
-    if (response.ok) {
-      const result = await response.json()
-      return result
-    } else {
-      const errorText = await response.text()
-      throw new Error(`调用${toolName}失败: ${response.status} - ${errorText}`)
-    }
-  } catch (error) {
-    console.error(`调用MCP工具 ${toolName} 失败:`, error.message)
-    throw error
-  }
+  return await callDeviceMcpTool(toolName, params)
 }
 
 // 处理开始在线烧录
@@ -254,8 +230,16 @@ const handleStartFlash = async (flashData) => {
 
     // 步骤1: 检查设备状态
     onProgress(5, '检查设备状态...')
-    const deviceStatus = await callMcpTool('self.get_device_status')
-    // 检查设备是否在线（通过API调用成功来判断）
+    try {
+      const deviceStatus = await callMcpTool('self.get_device_status')
+      if (!deviceStatus) {
+        throw new Error('无法获取设备状态')
+      }
+    } catch (error) {
+      console.error('检查设备状态失败:', error)
+      onError(`设备离线或无响应: ${error.message}`)
+      return
+    }
 
     // 步骤2: 初始化WebSocket传输并获取下载URL
     onProgress(15, '初始化传输服务...')
@@ -302,9 +286,15 @@ const handleStartFlash = async (flashData) => {
 
     // 步骤3: 设置设备的下载URL
     onProgress(30, '设置设备下载URL...')
-    await callMcpTool('self.assets.set_download_url', {
-      url: downloadUrl
-    })
+    try {
+      await callMcpTool('self.assets.set_download_url', {
+        url: downloadUrl
+      })
+    } catch (error) {
+      console.error('设置下载URL失败:', error)
+      onError(`设置下载URL失败: ${error.message}`)
+      return
+    }
 
     // 步骤4: 重启设备
     onProgress(40, '重启设备...')
@@ -371,12 +361,16 @@ const loadConfigFromStorage = async () => {
     const storedData = await configStorage.loadConfig()
     
     if (storedData) {
-      // 恢复配置
+      // 恢复配置（但不恢复 step 和 tab，总是从第一步开始）
       config.value = storedData.config
-      currentStep.value = storedData.currentStep
-      activeThemeTab.value = storedData.activeThemeTab
+      // 始终从第一步开始
+      currentStep.value = 0
+      activeThemeTab.value = 'wakeword'
       hasStoredConfig.value = true // 显示"检测到已保存的配置"提示
       isAutoSaveEnabled.value = true // 启用自动保存
+      
+      // 检查并清除旧的表情数据结构（不兼容旧版本）
+      await cleanupLegacyEmojiData()
       
       // 清除之前的定时器
       if (autoHideTimer.value) {
@@ -394,7 +388,11 @@ const loadConfigFromStorage = async () => {
       
       // 触发一次浅拷贝以刷新引用，避免渲染时对占位值执行 createObjectURL
       try {
-        const images = config.value?.theme?.emoji?.custom?.images || {}
+        const emojiCustom = config.value?.theme?.emoji?.custom || {}
+        const images = emojiCustom.images || {}
+        const fileMap = emojiCustom.fileMap || {}
+        const emotionMap = emojiCustom.emotionMap || {}
+        
         config.value = {
           ...config.value,
           theme: {
@@ -402,13 +400,17 @@ const loadConfigFromStorage = async () => {
             emoji: {
               ...config.value.theme.emoji,
               custom: {
-                ...config.value.theme.emoji.custom,
-                images: { ...images }
+                ...emojiCustom,
+                images: { ...images },
+                fileMap: { ...fileMap },
+                emotionMap: { ...emotionMap }
               }
             }
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('刷新表情配置引用失败:', e)
+      }
       
     } else {
       hasStoredConfig.value = false
@@ -423,10 +425,66 @@ const loadConfigFromStorage = async () => {
   }
 }
 
+// 清理旧版本表情数据（强制使用新的 hash 结构）
+const cleanupLegacyEmojiData = async () => {
+  try {
+    const emojiCustom = config.value?.theme?.emoji?.custom
+    if (!emojiCustom) return
+    
+    // 检查是否使用旧结构（有 images 但没有 fileMap 和 emotionMap）
+    const hasImages = Object.keys(emojiCustom.images || {}).length > 0
+    const hasFileMap = emojiCustom.fileMap && Object.keys(emojiCustom.fileMap).length > 0
+    const hasEmotionMap = emojiCustom.emotionMap && Object.keys(emojiCustom.emotionMap).length > 0
+    const hasOldStructure = hasImages && (!hasFileMap || !hasEmotionMap)
+    
+    if (hasOldStructure) {
+      console.warn('⚠️ 检测到旧版本的表情数据结构（不兼容）')
+      console.log('正在清理旧数据...')
+      
+      // 清除存储中的旧表情文件
+      try {
+        const oldEmotions = Object.keys(emojiCustom.images || {})
+        for (const emotion of oldEmotions) {
+          await configStorage.deleteFile(`emoji_${emotion}`)
+        }
+        console.log(`已删除 ${oldEmotions.length} 个旧表情文件`)
+      } catch (error) {
+        console.warn('清理旧表情文件时出错:', error)
+      }
+      
+      // 重置为新的空结构
+      config.value.theme.emoji.custom = {
+        size: emojiCustom.size || { width: 64, height: 64 },
+        images: {},
+        fileMap: {},
+        emotionMap: {}
+      }
+      
+      // 如果当前在使用自定义表情，重置为未选择状态
+      if (config.value.theme.emoji.type === 'custom') {
+        config.value.theme.emoji.type = ''
+        console.log('已重置表情类型，请重新选择')
+      }
+      
+      // 立即保存清理后的配置
+      await saveConfigToStorage()
+      
+      console.log('✅ 旧表情数据已完全清除')
+      
+      // 友好的用户提示
+      setTimeout(() => {
+        alert('检测到旧版本的表情数据结构已被清除。\n\n新版本使用文件去重技术，可以节省存储空间。\n\n请重新上传自定义表情图片。')
+      }, 500)
+    }
+  } catch (error) {
+    console.error('清理旧表情数据时出错:', error)
+  }
+}
+
 // 保存配置到存储
 const saveConfigToStorage = async () => {
   try {
-    await configStorage.saveConfig(config.value, currentStep.value, activeThemeTab.value)
+    await configStorage.saveConfig(config.value)
   } catch (error) {
     console.error('保存配置失败:', error)
   }
@@ -448,8 +506,7 @@ const confirmReset = async () => {
           width: 320,
           height: 240,
           color: 'RGB565'
-        },
-        preset: ''
+        }
       },
       theme: {
         wakeword: '',
@@ -468,7 +525,6 @@ const confirmReset = async () => {
           preset: '',
           custom: {
             size: { width: 64, height: 64 },
-            format: 'png',
             images: {}
           }
         },
@@ -510,20 +566,6 @@ watch(config, async (newConfig) => {
   }
 }, { deep: true })
 
-// 监听步骤变化，自动保存
-watch(currentStep, async () => {
-  if (!isLoading.value && isAutoSaveEnabled.value) {
-    await saveConfigToStorage()
-  }
-})
-
-// 监听主题标签变化，自动保存
-watch(activeThemeTab, async () => {
-  if (!isLoading.value && isAutoSaveEnabled.value) {
-    await saveConfigToStorage()
-  }
-})
-
 // 页面加载时初始化
 onMounted(async () => {
   await configStorage.initialize()
@@ -558,3 +600,4 @@ const resetAutoHideTimer = () => {
   }, 5000)
 }
 </script>
+

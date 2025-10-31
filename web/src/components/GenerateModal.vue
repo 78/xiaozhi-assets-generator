@@ -5,6 +5,7 @@
       <div class="flex items-center justify-between p-6 border-b border-gray-200">
         <h3 class="text-lg font-medium text-gray-900">生成 assets.bin</h3>
         <button
+          v-if="!isFlashing"
           @click="$emit('close')"
           class="text-gray-400 hover:text-gray-500"
         >
@@ -12,6 +13,10 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
+        <!-- 烧录中提示 -->
+        <div v-else class="text-sm text-orange-600 font-medium">
+          烧录中，请勿关闭窗口
+        </div>
       </div>
 
       <!-- 模态框内容 -->
@@ -60,6 +65,7 @@
                 <div class="text-sm text-gray-700">
                   {{ item.size }}
                   <span v-if="item.estimated" class="text-xs text-gray-500 ml-1">预估</span>
+                  <span v-if="item.isCustomEmoji" class="text-xs text-gray-500 ml-1">压缩前</span>
                 </div>
               </div>
             </div>
@@ -134,7 +140,7 @@
           <div class="space-y-3">
             <button
               @click="downloadFile"
-              class="w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
+              class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
             >
               <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -156,7 +162,8 @@
         </div>
 
         <!-- 在线烧录进度 -->
-        <div v-if="isFlashing" class="space-y-6 text-center">
+        <!-- 烧录进行中 -->
+        <div v-if="isFlashing && !flashError" class="space-y-6 text-center">
           <div class="flex items-center justify-center">
             <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
           </div>
@@ -183,6 +190,11 @@
             取消烧录
           </button>
         </div>
+
+        <!-- 烧录失败错误提示 -->
+        <div v-if="flashError" class="text-center mt-4">
+          <p class="text-sm text-red-600">{{ flashError }}</p>
+        </div>
       </div>
 
       <!-- 模态框底部 -->
@@ -203,7 +215,7 @@
           开始生成
         </button>
         <button
-          v-if="isCompleted"
+          v-if="isCompleted && !isFlashing"
           @click="$emit('close')"
           class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
         >
@@ -217,6 +229,7 @@
 <script setup>
 import { ref, computed, onMounted, markRaw, h } from 'vue'
 import AssetsBuilder from '@/utils/AssetsBuilder.js'
+import { useDeviceStatus } from '@/composables/useDeviceStatus'
 
 const props = defineProps({
   config: {
@@ -226,6 +239,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'generate', 'startFlash', 'cancelFlash'])
+
+// 获取设备状态
+const { deviceInfo } = useDeviceStatus()
 
 const isGenerating = ref(false)
 const isCompleted = ref(false)
@@ -239,6 +255,7 @@ const deviceOnline = ref(false)
 const isFlashing = ref(false)
 const flashProgress = ref(0)
 const flashCurrentStep = ref('')
+const flashError = ref('')
 
 
 const progressSteps = ref([
@@ -360,7 +377,7 @@ const initializeFileList = () => {
       description: '唤醒词模型',
       icon: MicIcon,
       iconColor: 'text-green-500',
-      size: '~2.1MB'
+      size: '~300KB'
     })
   }
 
@@ -383,7 +400,7 @@ const initializeFileList = () => {
     })
   } else if (props.config.theme.font.custom.file) {
     const custom = props.config.theme.font.custom
-    const estimatedSize = Math.max(100, custom.size * custom.size * custom.bpp * 0.1)
+    const estimatedSize = Math.max(100, custom.size * custom.size * custom.bpp * 0.7)
     
     fileList.value.push({
       id: 'font',
@@ -411,18 +428,60 @@ const initializeFileList = () => {
         size: size
       })
     })
-  } else {
-    Object.entries(props.config.theme.emoji.custom.images).forEach(([emotion, file]) => {
-      const fileSizeKB = Math.round(file.size / 1024)
+  } else if (props.config.theme.emoji.type === 'custom') {
+    const custom = props.config.theme.emoji.custom
+    const emotionMap = custom.emotionMap || {}
+    const fileMap = custom.fileMap || {}
+    const images = custom.images || {}
+    
+    // 必须使用新的 hash 映射结构
+    if (Object.keys(emotionMap).length === 0 || Object.keys(fileMap).length === 0) {
+      console.error('❌ 检测到不兼容的表情数据，请重新配置')
+      return
+    }
+    
+    // 统计唯一文件
+    const uniqueFiles = new Map()
+    const emotionsPerFile = new Map()
+    
+    Object.entries(emotionMap).forEach(([emotion, fileHash]) => {
+      const file = fileMap[fileHash]
+      if (file) {
+        if (!uniqueFiles.has(fileHash)) {
+          const fileSizeKB = Math.round(file.size / 1024)
+          uniqueFiles.set(fileHash, {
+            file,
+            size: fileSizeKB > 1024 ? `${(fileSizeKB/1024).toFixed(1)}MB` : `${fileSizeKB}KB`,
+            emotions: []
+          })
+        }
+        uniqueFiles.get(fileHash).emotions.push(emotion)
+        emotionsPerFile.set(emotion, fileHash)
+      }
+    })
+    
+    // 添加去重后的文件到列表
+    uniqueFiles.forEach((fileInfo, fileHash) => {
+      const emotionNames = fileInfo.emotions.join(', ')
+      const isShared = fileInfo.emotions.length > 1
+      
       fileList.value.push({
-        id: `emoji_${emotion}`,
-        name: file.name,
-        description: `${emotion}表情图片`,
+        id: `emoji_${fileHash.substring(0, 8)}`,
+        name: `emoji_${fileHash.substring(0, 8)}.${fileInfo.file.name.split('.').pop()}`,
+        description: isShared 
+          ? `共享表情图片 (${emotionNames})` 
+          : `${emotionNames}表情图片`,
         icon: ImageIcon,
-        iconColor: 'text-pink-500',
-        size: fileSizeKB > 1024 ? `${(fileSizeKB/1024).toFixed(1)}MB` : `${fileSizeKB}KB`
+        iconColor: isShared ? 'text-purple-500' : 'text-pink-500',
+        size: fileInfo.size,
+        isCustomEmoji: true
       })
     })
+    
+    // 添加去重统计信息
+    if (uniqueFiles.size < Object.keys(emotionMap).length) {
+      console.log(`表情去重：${Object.keys(emotionMap).length} 个表情使用了 ${uniqueFiles.size} 个文件`)
+    }
   }
 
   // 添加背景文件
@@ -599,18 +658,32 @@ const checkDeviceOnline = async () => {
 // 开始在线烧录
 const startOnlineFlash = async () => {
   if (!generatedBlob.value) {
-    flashCurrentStep.value = '错误：没有可烧录的文件'
+    alert('错误：没有可烧录的文件')
     return
   }
 
   if (!deviceOnline.value) {
-    flashCurrentStep.value = '错误：设备不在线，无法进行烧录'
+    alert('错误：设备不在线，无法进行烧录')
     return
+  }
+
+  // 检查文件大小是否超过assets分区大小
+  if (deviceInfo.value.assetsPartition && deviceInfo.value.assetsPartition.size) {
+    const assetsPartitionSize = deviceInfo.value.assetsPartition.size
+    const fileSize = generatedBlob.value.size
+    
+    if (fileSize > assetsPartitionSize) {
+      const fileSizeMB = (fileSize / 1024 / 1024).toFixed(2)
+      const partitionSizeMB = (assetsPartitionSize / 1024 / 1024).toFixed(2)
+      alert(`烧录失败：文件大小 ${fileSizeMB}MB 超过 assets 分区大小 ${partitionSizeMB}MB，请减少配置内容或使用更大容量的设备`)
+      return
+    }
   }
 
   isFlashing.value = true
   flashProgress.value = 0
   flashCurrentStep.value = '准备开始烧录...'
+  flashError.value = ''
 
   try {
     // 通知父组件开始在线烧录
@@ -627,13 +700,14 @@ const startOnlineFlash = async () => {
       },
       onError: (error) => {
         isFlashing.value = false
-        flashCurrentStep.value = `烧录失败: ${error}`
+        flashError.value = error
+        console.error('烧录失败:', error)
       }
     })
   } catch (error) {
     isFlashing.value = false
+    flashError.value = `启动烧录失败: ${error.message}`
     console.error('启动烧录失败:', error)
-    flashCurrentStep.value = `启动烧录失败: ${error.message}`
   }
 }
 
@@ -643,6 +717,7 @@ const cancelFlash = () => {
     isFlashing.value = false
     flashProgress.value = 0
     flashCurrentStep.value = ''
+    flashError.value = ''
     emit('cancelFlash')
   }
 }
