@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "小智 AI 自定义资源生成器"
+    "title": "小智 AI 自定义"
   },
   "common": {
     "cancel": "取消",
@@ -25,7 +25,7 @@
     "other": "其他"
   },
   "header": {
-    "title": "小智 AI 自定义资源生成器"
+    "title": "小智 AI 自定义"
   },
   "configNotice": {
     "title": "检测到已保存的配置",
@@ -59,7 +59,17 @@
     "flashing": "正在烧录到设备...",
     "flashingCancel": "取消烧录",
     "flashingError": "烧录错误",
-    "flashingInProgress": "烧录中，请勿关闭窗口"
+    "flashingInProgress": "烧录中，请勿关闭窗口",
+    "customFont": "自定义字体",
+    "customEmoji": "自定义表情包",
+    "notConfigured": "未配置",
+    "wakewordNames": {
+      "wn9s_hilexin": "Hi,乐鑫",
+      "wn9s_hiesp": "Hi,ESP",
+      "wn9s_nihaoxiaozhi": "你好小智",
+      "wn9_nihaoxiaozhi_tts": "你好小智",
+      "wn9_alexa": "Alexa"
+    }
   },
   "progressSteps": {
     "init": "初始化生成器",
@@ -81,6 +91,22 @@
     "oldDataCleared": "检测到旧版本的表情数据结构已被清除。\n\n新版本使用文件去重技术，可以节省存储空间。\n\n请重新上传自定义表情图片。",
     "incompatibleEmojiData": "检测到不兼容的表情数据，请重新配置"
   },
+  "flashProgress": {
+    "authTokenMissing": "未找到认证令牌",
+    "checkingDeviceStatus": "检查设备状态...",
+    "deviceOfflineOrUnresponsive": "设备离线或无响应: {error}",
+    "unableToGetDeviceStatus": "无法获取设备状态",
+    "initializingTransferService": "初始化传输服务...",
+    "initializeTransferFailed": "初始化传输服务失败: {error}",
+    "settingDeviceDownloadUrl": "设置设备下载URL...",
+    "setDownloadUrlFailed": "设置下载URL失败: {error}",
+    "rebootingDevice": "重启设备...",
+    "waitingForDeviceReboot": "等待设备重启...",
+    "deviceRebootTimeout": "等待设备重启超时（60秒）",
+    "startingFileTransfer": "开始传输文件...",
+    "flashCompleted": "烧录完成！",
+    "onlineFlashFailed": "在线烧录失败: {error}"
+  },
   "device": {
     "online": "在线",
     "offline": "离线",
@@ -90,7 +116,14 @@
     "chip": "芯片",
     "board": "开发板",
     "flash": "Flash",
-    "screen": "屏幕"
+    "screen": "屏幕",
+    "signal": {
+      "unknown": "未知",
+      "strong": "强",
+      "medium": "中等",
+      "weak": "弱",
+      "none": "无信号"
+    }
   },
   "chipConfig": {
     "title": "步骤 1: 芯片型号和屏幕配置",
@@ -118,7 +151,9 @@
     "resolutionError": "无法获取屏幕分辨率，请手动输入",
     "timeoutError": "加载设备配置超时，请手动输入",
     "manualConfigDesc": "无法自动读取设备配置",
-    "manualConfigHint": "设备未连接或离线，请手动输入硬件配置"
+    "manualConfigHint": "设备未连接或离线，请手动输入硬件配置",
+    "manualConfigRequired": "请手动输入硬件配置",
+    "resolutionFormatError": "屏幕分辨率格式错误"
   },
   "themeDesign": {
     "title": "步骤 2: 主题设计",
@@ -132,12 +167,13 @@
       "background": "聊天背景"
     }
   },
-  "generateSummary": {
+    "generateSummary": {
     "title": "步骤 3: 效果预览",
     "description": "预览您的自定义配置在实际设备上的效果。",
     "devicePreview": "设备预览 (1:1 像素比例)",
     "previewSettings": "预览设置",
     "previewText": "预览文字",
+    "defaultPreviewText": "你好，我是你的朋友小智！",
     "currentEmotion": "当前表情",
     "themeMode": "主题模式",
     "lightMode": "浅色",
@@ -246,6 +282,7 @@
     "sharedFileMessage": "表情 {emotionKey} 使用了与 {existingEmotions} 相同的图片文件（共享存储）",
     "fileDeleted": "文件 {fileHash} 已删除（无其他表情引用）",
     "fileRetained": "文件 {fileHash} 仍被其他表情使用，保留文件",
+    "imageLoadFailed": "表情图片加载失败",
     "emotions": {
       "neutral": "默认",
       "happy": "开心",
@@ -297,7 +334,14 @@
     "gb2312": "GB2312 (7445字符)",
     "latin1": "Latin1 (190字符)",
     "recommendedDeepseek": "建议使用 DeepSeek R1",
-    "selectValidFontFile": "请选择有效的字体文件 (TTF, WOFF, WOFF2)"
+    "selectValidFontFile": "请选择有效的字体文件 (TTF, WOFF, WOFF2)",
+    "presetFontNames": {
+      "font_puhui_deepseek_14_1": "阿里巴巴普惠体 14px",
+      "font_puhui_deepseek_16_4": "阿里巴巴普惠体 16px",
+      "font_puhui_deepseek_20_4": "阿里巴巴普惠体 20px",
+      "font_puhui_deepseek_30_4": "阿里巴巴普惠体 30px"
+    },
+    "commonCharset": "常用字7000个"
   },
   "wakewordConfig": {
     "title": "唤醒词配置",
@@ -310,6 +354,7 @@
     "selectWakeword": "选择唤醒词",
     "placeholder": "请选择唤醒词（可选）",
     "tips": {
+      "tipLabel": "提示：",
       "optional": "唤醒词是可选的，不配置唤醒词时设备将无法语音唤醒。",
       "wakeNet9sOnly": "C3/C5/C6 芯片仅支持 WakeNet9s 轻量级模型。",
       "wakeNet9Full": "S3/P4 芯片支持完整的 WakeNet9 模型，选择更多。"

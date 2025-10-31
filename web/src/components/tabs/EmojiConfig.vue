@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">表情集合配置</h3>
-      <p class="text-gray-600">选择预设表情包或自定义表情图片。每个表情包包含21种不同情绪的表情。</p>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">{{ $t('emojiConfig.title') }}</h3>
+      <p class="text-gray-600">{{ $t('emojiConfig.description') }}</p>
     </div>
 
     <!-- 表情类型选择 -->
@@ -17,7 +17,7 @@
               : 'border-gray-300 hover:border-gray-400'
           ]"
         >
-          预设表情包
+          {{ $t('emojiConfig.presetEmojiPack') }}
         </button>
         <button
           @click="setEmojiType('custom')"
@@ -28,14 +28,13 @@
               : 'border-gray-300 hover:border-gray-400'
           ]"
         >
-          自定义表情包
+          {{ $t('emojiConfig.customEmojiPack') }}
         </button>
       </div>
     </div>
 
-    <!-- 预设表情包选择 -->
     <div v-if="modelValue.type === 'preset'" class="space-y-4">
-      <h4 class="font-medium text-gray-900">选择预设表情包</h4>
+      <h4 class="font-medium text-gray-900">{{ $t('emojiConfig.selectPresetEmojiPack') }}</h4>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div
           v-for="pack in presetEmojis"
@@ -53,7 +52,7 @@
               <h5 class="font-medium text-gray-900">{{ pack.name }}</h5>
               <p class="text-sm text-gray-600">{{ pack.description }}</p>
               <div class="text-xs text-gray-500 mt-1">
-                尺寸: {{ pack.size }}px × {{ pack.size }}px
+                {{ $t('emojiConfig.size') }}: {{ pack.size }}px × {{ pack.size }}px
               </div>
             </div>
             <div 
@@ -89,15 +88,14 @@
       </div>
     </div>
 
-    <!-- 自定义表情包 -->
     <div v-if="modelValue.type === 'custom'" class="space-y-6">
-      <h4 class="font-medium text-gray-900">自定义表情包配置</h4>
+      <h4 class="font-medium text-gray-900">{{ $t('emojiConfig.customEmojiPackConfig') }}</h4>
       
       <!-- 基本配置 -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- 图片尺寸 -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">最大图片宽度 (px)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('emojiConfig.maxImageWidth') }}</label>
           <input
             type="number"
             v-model.number="localCustom.size.width"
@@ -108,7 +106,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">最大图片高度 (px)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('emojiConfig.maxImageHeight') }}</label>
           <input
             type="number"
             v-model.number="localCustom.size.height"
@@ -121,7 +119,7 @@
 
       <!-- 表情图片上传 -->
       <div class="space-y-4">
-        <h5 class="font-medium text-gray-900">上传表情图片（GIF 需要 PSRAM）</h5>
+        <h5 class="font-medium text-gray-900">{{ $t('emojiConfig.uploadEmojiImages') }}</h5>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           <div
             v-for="emotion in emotionList"
@@ -132,7 +130,7 @@
               <div class="text-lg mb-1">{{ emotion.emoji }}</div>
               <div class="text-xs text-gray-600 flex items-center justify-center gap-1">
                 <span>{{ emotion.name }}</span>
-                <span v-if="emotion.key === 'neutral'" class="text-red-500">必需</span>
+                <span v-if="emotion.key === 'neutral'" class="text-red-500">{{ $t('emojiConfig.required') }}</span>
               </div>
             </div>
             
@@ -161,7 +159,7 @@
                 <svg class="w-6 h-6 text-gray-400 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                 </svg>
-                <div class="text-xs text-gray-500">点击上传或拖拽到此处</div>
+                <div class="text-xs text-gray-500">{{ $t('emojiConfig.clickToUploadOrDrag') }}</div>
               </div>
               
               <div v-else class="w-full h-full relative">
@@ -184,7 +182,7 @@
         </div>
         
         <div class="text-xs text-gray-500 mt-2">
-          * 必须上传 neutral 默认表情，其他表情可选。如果不上传其他表情，将使用默认表情代替。
+          {{ $t('emojiConfig.neutralRequiredNotice') }}
         </div>
       </div>
     </div>
@@ -193,7 +191,10 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import StorageHelper from '@/utils/StorageHelper.js'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {
@@ -220,43 +221,44 @@ const calculateFileHash = async (file) => {
 const presetEmojis = [
   {
     id: 'twemoji32',
-    name: 'Twemoji 32x32',
-    description: 'Twitter表情包，32×32像素',
+    name: t('emojiConfig.twitterEmojiName', { size: 32 }),
+    description: t('emojiConfig.twitterEmojiDescription', { size: 32 }),
     size: 32,
     preview: ['neutral', 'happy', 'laughing', 'funny', 'sad', 'angry', 'crying']
   },
   {
     id: 'twemoji64',
-    name: 'Twemoji 64x64', 
-    description: 'Twitter表情包，64×64像素',
+    name: t('emojiConfig.twitterEmojiName', { size: 64 }),
+    description: t('emojiConfig.twitterEmojiDescription', { size: 64 }),
     size: 64,
     preview: ['neutral', 'happy', 'laughing', 'funny', 'sad', 'angry', 'crying']
   }
 ]
 
-const emotionList = [
-  { key: 'neutral', name: '默认', emoji: '😶' },
-  { key: 'happy', name: '开心', emoji: '🙂' },
-  { key: 'laughing', name: '大笑', emoji: '😆' },
-  { key: 'funny', name: '搞笑', emoji: '😂' },
-  { key: 'sad', name: '伤心', emoji: '😔' },
-  { key: 'angry', name: '生气', emoji: '😠' },
-  { key: 'crying', name: '哭泣', emoji: '😭' },
-  { key: 'loving', name: '喜爱', emoji: '😍' },
-  { key: 'embarrassed', name: '尴尬', emoji: '😳' },
-  { key: 'surprised', name: '惊讶', emoji: '😯' },
-  { key: 'shocked', name: '震惊', emoji: '😱' },
-  { key: 'thinking', name: '思考', emoji: '🤔' },
-  { key: 'winking', name: '眨眼', emoji: '😉' },
-  { key: 'cool', name: '酷炫', emoji: '😎' },
-  { key: 'relaxed', name: '放松', emoji: '😌' },
-  { key: 'delicious', name: '美味', emoji: '🤤' },
-  { key: 'kissy', name: '飞吻', emoji: '😘' },
-  { key: 'confident', name: '自信', emoji: '😏' },
-  { key: 'sleepy', name: '困倦', emoji: '😴' },
-  { key: 'silly', name: '调皮', emoji: '😜' },
-  { key: 'confused', name: '困惑', emoji: '🙄' }
-]
+// 使用计算属性来获取翻译后的表情名称
+const emotionList = computed(() => [
+  { key: 'neutral', name: t('emojiConfig.emotions.neutral'), emoji: '😶' },
+  { key: 'happy', name: t('emojiConfig.emotions.happy'), emoji: '🙂' },
+  { key: 'laughing', name: t('emojiConfig.emotions.laughing'), emoji: '😆' },
+  { key: 'funny', name: t('emojiConfig.emotions.funny'), emoji: '😂' },
+  { key: 'sad', name: t('emojiConfig.emotions.sad'), emoji: '😔' },
+  { key: 'angry', name: t('emojiConfig.emotions.angry'), emoji: '😠' },
+  { key: 'crying', name: t('emojiConfig.emotions.crying'), emoji: '😭' },
+  { key: 'loving', name: t('emojiConfig.emotions.loving'), emoji: '😍' },
+  { key: 'embarrassed', name: t('emojiConfig.emotions.embarrassed'), emoji: '😳' },
+  { key: 'surprised', name: t('emojiConfig.emotions.surprised'), emoji: '😯' },
+  { key: 'shocked', name: t('emojiConfig.emotions.shocked'), emoji: '😱' },
+  { key: 'thinking', name: t('emojiConfig.emotions.thinking'), emoji: '🤔' },
+  { key: 'winking', name: t('emojiConfig.emotions.winking'), emoji: '😉' },
+  { key: 'cool', name: t('emojiConfig.emotions.cool'), emoji: '😎' },
+  { key: 'relaxed', name: t('emojiConfig.emotions.relaxed'), emoji: '😌' },
+  { key: 'delicious', name: t('emojiConfig.emotions.delicious'), emoji: '🤤' },
+  { key: 'kissy', name: t('emojiConfig.emotions.kissy'), emoji: '😘' },
+  { key: 'confident', name: t('emojiConfig.emotions.confident'), emoji: '😏' },
+  { key: 'sleepy', name: t('emojiConfig.emotions.sleepy'), emoji: '😴' },
+  { key: 'silly', name: t('emojiConfig.emotions.silly'), emoji: '😜' },
+  { key: 'confused', name: t('emojiConfig.emotions.confused'), emoji: '🙄' }
+])
 
 const localCustom = ref({
   size: { width: 32, height: 32 }
@@ -290,7 +292,7 @@ const selectPresetEmoji = (id) => {
   // 避免重复选择相同预设
   if (props.modelValue.preset === id) return
   
-  // 选择不同的预设表情包时，保留自定义表情数据
+  // 选择不同的{{ $t('emojiConfig.presetEmojiPack') }}时，保留自定义表情数据
   emit('update:modelValue', {
     ...props.modelValue,
     preset: id,
@@ -321,7 +323,7 @@ const updateEmojiImage = async (emotionKey, file) => {
   const fileExtension = file.name.split('.').pop().toLowerCase()
   
   if (!validFormats.includes(fileExtension)) {
-    alert('请选择有效的PNG或GIF格式图片')
+    alert(t('emojiConfig.selectValidFormat'))
     return
   }
 
@@ -344,7 +346,7 @@ const updateEmojiImage = async (emotionKey, file) => {
   
   // 如果检测到相同文件，提示用户
   if (existingEmotions.length > 0) {
-    console.log(`表情 ${emotionKey} 使用了与 ${existingEmotions.join(', ')} 相同的图片文件（共享存储）`)
+    console.log(t('emojiConfig.sharedFileMessage', { emotionKey, existingEmotions: existingEmotions.join(', ') }))
   }
   
   // 更新映射关系
@@ -392,9 +394,9 @@ const removeImage = async (emotionKey) => {
     delete newFileMap[fileHash]
     // 删除存储中的文件
     await StorageHelper.deleteEmojiFile(`hash_${fileHash}`)
-    console.log(`文件 ${fileHash} 已删除（无其他表情引用）`)
+    console.log(t('emojiConfig.fileDeleted', { fileHash }))
   } else {
-    console.log(`文件 ${fileHash} 仍被其他表情使用，保留文件`)
+    console.log(t('emojiConfig.fileRetained', { fileHash }))
   }
   
   emit('update:modelValue', {
@@ -427,7 +429,7 @@ const getImagePreview = (emotionKey) => {
 }
 
 const handleImageError = (event) => {
-  console.warn('Failed to load emoji image:', event.target.src)
+  console.warn(t('emojiConfig.imageLoadFailed'), event.target.src)
   // 可以设置一个默认的fallback图片
   event.target.style.display = 'none'
 }

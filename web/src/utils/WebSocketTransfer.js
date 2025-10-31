@@ -36,7 +36,7 @@ class WebSocketTransfer {
         this.ws.onerror = (error) => {
           console.error('WebSocket error:', error)
           this.isConnected = false
-          reject(new Error('WebSocket连接失败'))
+          reject(new Error('WebSocket connection failed'))
         }
 
         this.ws.onclose = (event) => {
@@ -48,12 +48,12 @@ class WebSocketTransfer {
         setTimeout(() => {
           if (!this.isConnected) {
             this.ws.close()
-            reject(new Error('WebSocket连接超时'))
+            reject(new Error('WebSocket connection timeout'))
           }
         }, 10000)
 
       } catch (error) {
-        reject(new Error(`创建WebSocket连接失败: ${error.message}`))
+        reject(new Error(`Failed to create WebSocket connection: ${error.message}`))
       }
     })
   }
@@ -105,7 +105,7 @@ class WebSocketTransfer {
                 console.error('Invalid server bytesSent (negative):', serverBytesSent)
                 this.isSendingChunk = false // 重置发送标志
                 if (this.onError) {
-                  this.onError(new Error('服务器返回无效的字节计数'))
+                  this.onError(new Error('Server returned invalid byte count'))
                 }
                 return
               }
@@ -114,7 +114,7 @@ class WebSocketTransfer {
                 console.error(`Server bytesSent (${serverBytesSent}) exceeds fileSize (${totalSize})`)
                 this.isSendingChunk = false // 重置发送标志
                 if (this.onError) {
-                  this.onError(new Error('服务器字节计数超出文件大小'))
+                  this.onError(new Error('Server byte count exceeds file size'))
                 }
                 return
               }
@@ -180,7 +180,7 @@ class WebSocketTransfer {
     // 严格检查：确保不会发送超出文件大小的数据
     if (bytesSent >= totalSize) {
       if (this.onProgress) {
-        this.onProgress(100, '传输完成，等待设备确认...')
+        this.onProgress(100, 'Transfer completed, waiting for device confirmation...')
       }
       return
     }
@@ -191,7 +191,7 @@ class WebSocketTransfer {
     if (bytesSent > totalSize) {
       console.error(`Critical error: bytesSent (${bytesSent}) exceeds fileSize (${totalSize})`)
       if (this.onError) {
-        this.onError(new Error('传输字节数超出文件大小'))
+        this.onError(new Error('Transfer byte count exceeds file size'))
       }
       return
     }
@@ -211,7 +211,7 @@ class WebSocketTransfer {
       const arrayBuffer = await new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result)
-        reader.onerror = () => reject(new Error('读取文件失败'))
+        reader.onerror = () => reject(new Error('File read failed'))
         reader.readAsArrayBuffer(chunk)
       })
 
@@ -231,7 +231,7 @@ class WebSocketTransfer {
       if (newBytesSent > totalSize) {
         console.error(`Critical error: bytesSent (${newBytesSent}) exceeds fileSize (${totalSize})`)
         if (this.onError) {
-          this.onError(new Error('传输字节数超出文件大小'))
+          this.onError(new Error('Transfer byte count exceeds file size'))
         }
         return
       }
@@ -240,14 +240,14 @@ class WebSocketTransfer {
       if (this.totalBytesSent > totalSize) {
         console.error(`Critical error: totalBytesSent (${this.totalBytesSent}) exceeds fileSize (${totalSize})`)
         if (this.onError) {
-          this.onError(new Error('总发送字节数超出文件大小'))
+          this.onError(new Error('Total sent bytes exceed file size'))
         }
         return
       }
 
       // 更新进度（只更新传输进度部分）
       const transferProgress = Math.round(newBytesSent / totalSize * 60) + 40 // 40-100范围
-      const step = `正在传输... ${Math.round(newBytesSent / 1024)}KB / ${Math.round(totalSize / 1024)}KB`
+      const step = `Transferring... ${Math.round(newBytesSent / 1024)}KB / ${Math.round(totalSize / 1024)}KB`
 
       if (this.onProgress) {
         this.onProgress(transferProgress, step)
@@ -279,13 +279,13 @@ class WebSocketTransfer {
       try {
         // 连接到WebSocket服务器
         if (this.onProgress) {
-          this.onProgress(5, '连接到传输服务器...')
+          this.onProgress(5, 'Connecting to transfer server...')
         }
 
         this.connect().then(() => {
           // 发送文件创建请求
           if (this.onProgress) {
-            this.onProgress(10, '创建文件会话...')
+            this.onProgress(10, 'Creating file session...')
           }
 
           const createMessage = {
@@ -338,7 +338,7 @@ class WebSocketTransfer {
       }
 
       if (!this.currentSession || !this.currentSession.blob) {
-        const error = new Error('传输会话未初始化')
+        const error = new Error('Transfer session not initialized')
         if (this.onError) this.onError(error)
         reject(error)
         return
@@ -374,14 +374,14 @@ class WebSocketTransfer {
     try {
       // 连接到WebSocket服务器
       if (this.onProgress) {
-        this.onProgress(5, '连接到传输服务器...')
+        this.onProgress(5, 'Connecting to transfer server...')
       }
 
       await this.connect()
 
       // 发送文件创建请求
       if (this.onProgress) {
-        this.onProgress(10, '创建文件会话...')
+        this.onProgress(10, 'Creating file session...')
       }
 
       const createMessage = {

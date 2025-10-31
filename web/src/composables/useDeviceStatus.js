@@ -185,19 +185,19 @@ const checkDeviceStatus = async () => {
   }
 }
 
-// 格式化信号强度显示文本
-const getSignalDisplayText = (signal) => {
-  if (!signal) return '未知'
+// 格式化信号强度显示文本（已移至组件中实现国际化）
+const getSignalDisplayText = (signal, t) => {
+  if (!signal) return t('device.signal.unknown')
 
   switch (signal.toLowerCase()) {
     case 'strong':
-      return '强'
+      return t('device.signal.strong')
     case 'medium':
-      return '中等'
+      return t('device.signal.medium')
     case 'weak':
-      return '弱'
+      return t('device.signal.weak')
     case 'none':
-      return '无信号'
+      return t('device.signal.none')
     default:
       return signal
   }

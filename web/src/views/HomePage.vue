@@ -11,7 +11,7 @@
           <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
           </svg>
-          <span class="text-blue-800 font-medium">检测到已保存的配置</span>
+          <span class="text-blue-800 font-medium">{{ $t('configNotice.title') }}</span>
         </div>
         <button 
           @click="closeConfigNotice"
@@ -23,14 +23,14 @@
         </button>
       </div>
       <p class="text-blue-600 text-sm mb-3">
-        配置已自动恢复，您可以继续之前的进度或重新开始
+        {{ $t('configNotice.message') }}
       </p>
       <div class="flex justify-end space-x-2">
         <button 
           @click="confirmReset"
           class="px-3 py-1 text-sm text-red-600 hover:text-red-800 font-medium"
         >
-          重新开始
+          {{ $t('configNotice.restart') }}
         </button>
       </div>
     </div>
@@ -42,7 +42,7 @@
           <div :class="getStepClass(index)">
             {{ index + 1 }}
           </div>
-          <span class="text-sm mt-2 text-gray-600">{{ step.title }}</span>
+          <span class="text-sm mt-2 text-gray-600">{{ $t(step.titleKey) }}</span>
         </div>
         <div v-if="index < steps.length - 1" class="w-16 h-0.5 bg-gray-300 mx-4"></div>
       </div>
@@ -91,6 +91,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ChipConfig from '@/components/ChipConfig.vue'
 import ThemeDesign from '@/components/ThemeDesign.vue'
 import GenerateSummary from '@/components/GenerateSummary.vue'
@@ -105,6 +106,9 @@ const {
   callMcpTool: callDeviceMcpTool
 } = useDeviceStatus()
 
+// 使用国际化
+const { t } = useI18n()
+
 const currentStep = ref(0)
 const showGenerateModal = ref(false)
 const activeThemeTab = ref('wakeword') // 保持主题设计页面的tab状态
@@ -118,10 +122,12 @@ const assetsBuilder = new AssetsBuilder()
 const autoHideTimer = ref(null) // 新增：自动隐藏定时器
 const webSocketTransfer = ref(null) // WebSocket传输实例
 
+// 注意：由于在setup函数外部，我们需要在这里定义一个函数来获取翻译
+// 或者我们可以将这个移到setup函数内部
 const steps = [
-  { title: '芯片配置', key: 'chip' },
-  { title: '主题设计', key: 'theme' },
-  { title: '效果预览', key: 'generate' }
+  { titleKey: 'steps.chip', key: 'chip' },
+  { titleKey: 'steps.theme', key: 'theme' },
+  { titleKey: 'steps.generate', key: 'generate' }
 ]
 
 const config = ref({
@@ -225,24 +231,24 @@ const handleStartFlash = async (flashData) => {
   try {
     const token = getToken()
     if (!token) {
-      throw new Error('未找到认证令牌')
+      throw new Error(t('flashProgress.authTokenMissing'))
     }
 
     // 步骤1: 检查设备状态
-    onProgress(5, '检查设备状态...')
+    onProgress(5, t('flashProgress.checkingDeviceStatus'))
     try {
       const deviceStatus = await callMcpTool('self.get_device_status')
       if (!deviceStatus) {
-        throw new Error('无法获取设备状态')
+        throw new Error(t('flashProgress.deviceOfflineOrUnresponsive', { error: t('flashProgress.unableToGetDeviceStatus') }))
       }
     } catch (error) {
       console.error('检查设备状态失败:', error)
-      onError(`设备离线或无响应: ${error.message}`)
+      onError(t('flashProgress.deviceOfflineOrUnresponsive', { error: error.message }))
       return
     }
 
     // 步骤2: 初始化WebSocket传输并获取下载URL
-    onProgress(15, '初始化传输服务...')
+    onProgress(15, t('flashProgress.initializingTransferService'))
     webSocketTransfer.value = new WebSocketTransfer(token)
 
     // 创建一个Promise来等待下载URL准备好
@@ -274,7 +280,7 @@ const handleStartFlash = async (flashData) => {
       },
       (error) => {
         console.error('WebSocket初始化失败:', error)
-        onError('初始化传输服务失败: ' + error.message)
+        onError(t('flashProgress.initializeTransferFailed', { error: error.message }))
       },
       (downloadUrl) => {
         downloadUrlReady(downloadUrl)
@@ -285,19 +291,19 @@ const handleStartFlash = async (flashData) => {
     const downloadUrl = await downloadUrlPromise
 
     // 步骤3: 设置设备的下载URL
-    onProgress(30, '设置设备下载URL...')
+    onProgress(30, t('flashProgress.settingDeviceDownloadUrl'))
     try {
       await callMcpTool('self.assets.set_download_url', {
         url: downloadUrl
       })
     } catch (error) {
       console.error('设置下载URL失败:', error)
-      onError(`设置下载URL失败: ${error.message}`)
+      onError(t('flashProgress.setDownloadUrlFailed', { error: error.message }))
       return
     }
 
     // 步骤4: 重启设备
-    onProgress(40, '重启设备...')
+    onProgress(40, t('flashProgress.rebootingDevice'))
     // reboot指令没有返回值，不需要等待，直接调用
     callMcpTool('self.reboot').catch(error => {
       console.warn('reboot指令调用警告（设备可能已重启）:', error)
@@ -305,17 +311,17 @@ const handleStartFlash = async (flashData) => {
     })
 
     // 步骤5: 等待设备重启并建立HTTP连接（通过transfer_started事件）
-    onProgress(50, '等待设备重启...')
+    onProgress(50, t('flashProgress.waitingForDeviceReboot'))
 
     // 等待transfer_started事件，设置60秒超时
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('等待设备重启超时（60秒）')), 60000)
+      setTimeout(() => reject(new Error(t('flashProgress.deviceRebootTimeout'))), 60000)
     })
 
     await Promise.race([transferStartedPromise, timeoutPromise])
 
     // 步骤6: 开始实际的文件传输
-    onProgress(60, '开始传输文件...')
+    onProgress(60, t('flashProgress.startingFileTransfer'))
 
     // 设备已准备好，直接开始传输（transfer_started已收到，sendFileData会立即执行）
     await webSocketTransfer.value.startTransfer(
@@ -325,7 +331,7 @@ const handleStartFlash = async (flashData) => {
         onProgress(Math.round(adjustedProgress), step)
       },
       (error) => {
-        onError(error.message)
+        onError(t('flashProgress.onlineFlashFailed', { error: error.message }))
       },
       () => {
         onComplete()
@@ -337,7 +343,7 @@ const handleStartFlash = async (flashData) => {
 
   } catch (error) {
     console.error('在线烧录失败:', error)
-    onError(error.message)
+    onError(t('flashProgress.onlineFlashFailed', { error: error.message }))
   }
 }
 

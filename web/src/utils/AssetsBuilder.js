@@ -43,7 +43,7 @@ class AssetsBuilder {
   setConfig(config, options = {}) {
     const strict = options?.strict ?? true
     if (strict && !this.validateConfig(config)) {
-      throw new Error('配置对象验证失败')
+      throw new Error('Configuration object validation failed')
     }
     this.config = { ...config }
     return this
@@ -59,25 +59,25 @@ class AssetsBuilder {
     
     // 验证芯片配置
     if (!config.chip?.model) {
-      console.error('缺少芯片型号配置')
+      console.error('Missing chip model configuration')
       return false
     }
 
     // 验证显示配置
     const display = config.chip.display
     if (!display?.width || !display?.height) {
-      console.error('缺少显示分辨率配置')
+      console.error('Missing display resolution configuration')
       return false
     }
 
     // 验证字体配置
     const font = config.theme?.font
     if (font?.type === 'preset' && !font.preset) {
-      console.error('预设字体配置不完整')
+      console.error('Preset font configuration is incomplete')
       return false
     }
     if (font?.type === 'custom' && !font.custom?.file) {
-      console.error('自定义字体文件未提供')
+      console.error('Custom font file not provided')
       return false
     }
 
@@ -104,7 +104,7 @@ class AssetsBuilder {
     // 自动保存文件到存储
     if (this.autoSaveEnabled && file instanceof File) {
       this.saveFileToStorage(key, file, resourceType).catch(error => {
-        console.warn(`自动保存文件 ${filename} 失败:`, error)
+        console.warn(`Auto-saving file ${filename} failed:`, error)
       })
     }
 
@@ -121,9 +121,9 @@ class AssetsBuilder {
   async saveFileToStorage(key, file, resourceType) {
     try {
       await this.configStorage.saveFile(key, file, resourceType)
-      console.log(`文件 ${file.name} 已自动保存到存储`)
+      console.log(`File ${file.name} auto-saved to storage`)
     } catch (error) {
-      console.error(`保存文件到存储失败: ${file.name}`, error)
+      console.error(`Failed to save file to storage: ${file.name}`, error)
       throw error
     }
   }
@@ -146,12 +146,12 @@ class AssetsBuilder {
           resourceType: file.storedType,
           fromStorage: true
         })
-        console.log(`资源 ${key} 从存储恢复成功: ${file.name}`)
+        console.log(`Resource ${key} restored from storage successfully: ${file.name}`)
         return true
       }
       return false
     } catch (error) {
-      console.error(`从存储恢复资源失败: ${key}`, error)
+      console.error(`Failed to restore resource from storage: ${key}`, error)
       return false
     }
   }
@@ -173,7 +173,7 @@ class AssetsBuilder {
         const resource = this.resources.get(fontKey)
         if (resource) {
           config.theme.font.custom.file = resource.file
-          restoredFiles.push(`自定义字体: ${resource.filename}`)
+          restoredFiles.push(`Custom font: ${resource.filename}`)
         }
       }
     }
@@ -227,7 +227,7 @@ class AssetsBuilder {
                 images[emotion] = resource.file
               })
               
-              restoredFiles.push(`表情文件 ${hash.substring(0, 8)}... (用于: ${emotionsUsingHash.join(', ')})`)
+              restoredFiles.push(`Emoji file ${hash.substring(0, 8)}... (used for: ${emotionsUsingHash.join(', ')})`)
             }
           }
         }
@@ -251,7 +251,7 @@ class AssetsBuilder {
               const resource = this.resources.get(emojiKey)
               if (resource) {
                 images[emojiName] = resource.file
-                restoredFiles.push(`表情 ${emojiName}: ${resource.filename}`)
+                restoredFiles.push(`Emoji ${emojiName}: ${resource.filename}`)
               }
             }
           }
@@ -267,7 +267,7 @@ class AssetsBuilder {
         const resource = this.resources.get(bgKey)
         if (resource) {
           config.theme.skin.light.backgroundImage = resource.file
-          restoredFiles.push(`浅色背景: ${resource.filename}`)
+          restoredFiles.push(`Light background: ${resource.filename}`)
         }
       }
     }
@@ -278,7 +278,7 @@ class AssetsBuilder {
         const resource = this.resources.get(bgKey)
         if (resource) {
           config.theme.skin.dark.backgroundImage = resource.file
-          restoredFiles.push(`深色背景: ${resource.filename}`)
+          restoredFiles.push(`Dark background: ${resource.filename}`)
         }
       }
     }
@@ -291,15 +291,15 @@ class AssetsBuilder {
         const tempData = await this.configStorage.loadTempData(tempKey)
         if (tempData) {
           this.convertedFonts.set(fontInfo.filename, tempData.data)
-          console.log(`转换后的字体数据已恢复: ${fontInfo.filename}`)
+          console.log(`Converted font data restored: ${fontInfo.filename}`)
         }
       }
     } catch (error) {
-      console.warn('恢复转换后的字体数据时出错:', error)
+      console.warn('Error restoring converted font data:', error)
     }
 
     if (restoredFiles.length > 0) {
-      console.log('已从存储恢复的文件:', restoredFiles)
+      console.log('Files restored from storage:', restoredFiles)
     }
   }
 
@@ -404,9 +404,9 @@ class AssetsBuilder {
       
       // 必须使用新的 hash 映射结构
       if (Object.keys(emotionMap).length === 0 || Object.keys(fileMap).length === 0) {
-        console.error('❌ 错误：检测到旧版本的表情数据结构')
-        console.error('请清除浏览器缓存或重置配置，然后重新上传表情图片')
-        throw new Error('不兼容的表情数据结构：缺少 fileMap 或 emotionMap。请重新配置表情。')
+        console.error('❌ Error: Detected old version of emoji data structure')
+        console.error('Please clear browser cache or reset configuration, then re-upload emoji images')
+        throw new Error('Incompatible emoji data structure: Missing fileMap or emotionMap. Please reconfigure emojis.')
       }
       
       // 创建 hash 到文件名的映射（用于去重）
@@ -435,11 +435,11 @@ class AssetsBuilder {
         }
       })
       
-      console.log(`表情去重：${Object.keys(emotionMap).length} 个表情使用了 ${hashToFilename.size} 个不同的图片文件`)
+      console.log(`Emoji deduplication: ${Object.keys(emotionMap).length} emojis using ${hashToFilename.size} different image files`)
       
       // 确保至少有 neutral 表情
       if (!collection.find(item => item.name === 'neutral')) {
-        console.warn('警告：未提供 neutral 表情，将使用默认图片')
+        console.warn('Warning: neutral emoji not provided, default image will be used')
       }
     }
     
@@ -491,7 +491,7 @@ class AssetsBuilder {
    */
   generateIndexJson() {
     if (!this.config) {
-      throw new Error('配置对象未设置')
+      throw new Error('Configuration object not set')
     }
 
     const indexData = {
@@ -577,7 +577,7 @@ class AssetsBuilder {
       if (emoji.fileHash) {
         if (addedFileHashes.has(emoji.fileHash)) {
           // 文件已添加，跳过（但保留在 index.json 的 emoji_collection 中）
-          console.log(`跳过重复文件: ${emoji.name} -> ${emoji.file} (hash: ${emoji.fileHash.substring(0, 8)})`)
+          console.log(`Skipping duplicate file: ${emoji.name} -> ${emoji.file} (hash: ${emoji.fileHash.substring(0, 8)})`)
           return
         }
         addedFileHashes.add(emoji.fileHash)
@@ -625,7 +625,7 @@ class AssetsBuilder {
     const fontInfo = this.getFontInfo()
     
     if (fontInfo && fontInfo.type === 'custom' && !this.convertedFonts.has(fontInfo.filename)) {
-      if (progressCallback) progressCallback(20, '转换自定义字体...')
+      if (progressCallback) progressCallback(20, 'Converting custom font...')
       
       try {
         const convertOptions = {
@@ -638,7 +638,7 @@ class AssetsBuilder {
           range: fontInfo.config.range || '',
           compression: false,
           progressCallback: (progress, message) => {
-            if (progressCallback) progressCallback(20 + progress * 0.2, `字体转换: ${message}`)
+            if (progressCallback) progressCallback(20 + progress * 0.2, `Font conversion: ${message}`)
           }
         }
         
@@ -659,14 +659,14 @@ class AssetsBuilder {
               bpp: fontInfo.config.bpp,
               charset: fontInfo.config.charset
             })
-            console.log(`转换后的字体已保存到存储: ${fontInfo.filename}`)
+            console.log(`Converted font saved to storage: ${fontInfo.filename}`)
           } catch (error) {
-            console.warn(`保存转换后的字体失败: ${fontInfo.filename}`, error)
+            console.warn(`Failed to save converted font: ${fontInfo.filename}`, error)
           }
         }
       } catch (error) {
-        console.error('字体转换失败:', error)
-        throw new Error(`字体转换失败: ${error.message}`)
+        console.error('Font conversion failed:', error)
+        throw new Error(`Font conversion failed: ${error.message}`)
       }
     }
   }
@@ -678,17 +678,17 @@ class AssetsBuilder {
    */
   async generateAssetsBin(progressCallback = null) {
     if (!this.config) {
-      throw new Error('配置对象未设置')
+      throw new Error('Configuration object not set')
     }
 
     try {
-      if (progressCallback) progressCallback(0, '开始生成...')
+      if (progressCallback) progressCallback(0, 'Starting generation...')
       
       // 预处理自定义字体
       await this.preprocessCustomFonts(progressCallback)
       
       await new Promise(resolve => setTimeout(resolve, 100))
-      if (progressCallback) progressCallback(40, '准备资源文件...')
+      if (progressCallback) progressCallback(40, 'Preparing resource files...')
       
       const resources = this.preparePackageResources()
       
@@ -700,7 +700,7 @@ class AssetsBuilder {
       await this.processResourceFiles(resources, progressCallback)
       
       await new Promise(resolve => setTimeout(resolve, 100))
-      if (progressCallback) progressCallback(90, '生成最终文件...')
+      if (progressCallback) progressCallback(90, 'Generating final file...')
 
       // Print file list
       this.spiffsGenerator.printFileList()
@@ -712,12 +712,12 @@ class AssetsBuilder {
         }
       })
       
-      if (progressCallback) progressCallback(100, '生成完成')
+      if (progressCallback) progressCallback(100, 'Generation completed')
       
       return new Blob([assetsBinData], { type: 'application/octet-stream' })
       
     } catch (error) {
-      console.error('生成 assets.bin 失败:', error)
+      console.error('Failed to generate assets.bin:', error)
       throw error
     }
   }
@@ -760,7 +760,7 @@ class AssetsBuilder {
         isCustom: true
       }
     } catch (error) {
-      console.error('获取字体详细信息失败:', error)
+      console.error('Failed to get font details:', error)
       return null
     }
   }
@@ -790,7 +790,7 @@ class AssetsBuilder {
       
       return sizeInfo
     } catch (error) {
-      console.error('估算字体大小失败:', error)
+      console.error('Failed to estimate font size:', error)
       return null
     }
   }
@@ -805,26 +805,26 @@ class AssetsBuilder {
     const warnings = []
     
     if (!fontConfig.file) {
-      errors.push('缺少字体文件')
+      errors.push('Missing font file')
     } else {
       // 使用浏览器端转换器验证
       const isValid = this.fontConverterBrowser.validateFont(fontConfig.file)
         
       if (!isValid) {
-        errors.push('字体文件格式不支持')
+        errors.push('Font file format not supported')
       }
     }
     
     if (fontConfig.size < 8 || fontConfig.size > 80) {
-      errors.push('字体大小必须在 8-80 之间')
+      errors.push('Font size must be between 8-80')
     }
     
     if (![1, 2, 4, 8].includes(fontConfig.bpp)) {
-      errors.push('BPP 必须是 1, 2, 4 或 8')
+      errors.push('BPP must be 1, 2, 4 or 8')
     }
     
     if (!fontConfig.charset && !fontConfig.symbols && !fontConfig.range) {
-      warnings.push('未指定字符集、符号或范围，将使用默认字符集')
+      warnings.push('No charset, symbols or range specified, default charset will be used')
     }
     
     return {
@@ -864,15 +864,15 @@ class AssetsBuilder {
     for (const resource of resources.files) {
       const progressPercent = 40 + (processedCount / totalFiles) * 40
       if (progressCallback) {
-        progressCallback(progressPercent, `处理文件: ${resource.filename}`)
+        progressCallback(progressPercent, `Processing file: ${resource.filename}`)
       }
       
       try {
         await this.processResourceFile(resource)
         processedCount++
       } catch (error) {
-        console.error(`处理资源文件失败: ${resource.filename}`, error)
-        throw new Error(`处理资源文件失败: ${resource.filename} - ${error.message}`)
+        console.error(`Failed to process resource file: ${resource.filename}`, error)
+        throw new Error(`Failed to process resource file: ${resource.filename} - ${error.message}`)
       }
     }
   }
@@ -896,7 +896,7 @@ class AssetsBuilder {
         await this.processBackgroundFile(resource)
         break
       default:
-        console.warn(`未知的资源类型: ${resource.type}`)
+        console.warn(`Unknown resource type: ${resource.type}`)
     }
   }
 
@@ -907,7 +907,7 @@ class AssetsBuilder {
   async processWakewordModel(resource) {
     const success = await this.wakenetPacker.loadModelFromShare(resource.name)
     if (!success) {
-      throw new Error(`加载唤醒词模型失败: ${resource.name}`)
+      throw new Error(`Failed to load wakeword model: ${resource.name}`)
     }
     
     const srmodelsData = this.wakenetPacker.packModels()
@@ -925,7 +925,7 @@ class AssetsBuilder {
       if (convertedFont) {
         this.spiffsGenerator.addFile(resource.filename, convertedFont)
       } else {
-        throw new Error(`找不到转换后的字体: ${resource.filename}`)
+        throw new Error(`Converted font not found: ${resource.filename}`)
       }
     } else {
       // 预设字体，从share/fonts目录加载
@@ -971,10 +971,10 @@ class AssetsBuilder {
         if (actualDimensions.width > targetSize.width || 
             actualDimensions.height > targetSize.height) {
           needsScaling = true
-          console.log(`表情 ${resource.name} 需要缩放: ${actualDimensions.width}x${actualDimensions.height} -> ${targetSize.width}x${targetSize.height}`)
+          console.log(`Emoji ${resource.name} needs scaling: ${actualDimensions.width}x${actualDimensions.height} -> ${targetSize.width}x${targetSize.height}`)
         }
       } catch (error) {
-        console.warn(`无法获取表情图片尺寸: ${resource.name}`, error)
+        console.warn(`Failed to get emoji image dimensions: ${resource.name}`, error)
       }
       
       // 如果不需要缩放，直接读取文件
@@ -990,7 +990,7 @@ class AssetsBuilder {
         
         if (isGif) {
           // 使用 WasmGifScaler 处理 GIF 文件
-          console.log(`使用 WasmGifScaler 处理 GIF 表情: ${resource.name}`)
+          console.log(`Using WasmGifScaler to process GIF emoji: ${resource.name}`)
           const scaledGifBlob = await this.gifScaler.scaleGif(resource.source, {
             maxWidth: targetSize.width,
             maxHeight: targetSize.height,
@@ -1003,7 +1003,7 @@ class AssetsBuilder {
           imageData = await this.scaleImageToFit(resource.source, targetSize, imageFormat)
         }
       } catch (error) {
-        console.error(`表情图片缩放失败: ${resource.name}`, error)
+        console.error(`Failed to scale emoji image: ${resource.name}`, error)
         // 缩放失败时使用原图
         imageData = await this.fileToArrayBuffer(resource.source)
       }
@@ -1017,7 +1017,7 @@ class AssetsBuilder {
     
     // 记录处理日志
     if (resource.fileHash) {
-      console.log(`已添加表情文件: ${resource.filename} (hash: ${resource.fileHash.substring(0, 8)})`)
+      console.log(`Emoji file added: ${resource.filename} (hash: ${resource.fileHash.substring(0, 8)})`)
     }
   }
 
@@ -1046,7 +1046,7 @@ class AssetsBuilder {
       }
       return await response.arrayBuffer()
     } catch (error) {
-      throw new Error(`加载预设字体失败: ${fontName} - ${error.message}`)
+      throw new Error(`Failed to load preset font: ${fontName} - ${error.message}`)
     }
   }
 
@@ -1064,7 +1064,7 @@ class AssetsBuilder {
       }
       return await response.arrayBuffer()
     } catch (error) {
-      throw new Error(`加载预设表情失败: ${presetName}/${emojiName} - ${error.message}`)
+      throw new Error(`Failed to load preset emoji: ${presetName}/${emojiName} - ${error.message}`)
     }
   }
 
@@ -1077,7 +1077,7 @@ class AssetsBuilder {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = () => resolve(reader.result)
-      reader.onerror = () => reject(new Error('读取文件失败'))
+      reader.onerror = () => reject(new Error('Failed to read file'))
       reader.readAsArrayBuffer(file)
     })
   }
@@ -1141,7 +1141,7 @@ class AssetsBuilder {
           canvas.toBlob((blob) => {
             const reader = new FileReader()
             reader.onload = () => resolve(reader.result)
-            reader.onerror = () => reject(new Error('转换图片数据失败'))
+            reader.onerror = () => reject(new Error('Failed to convert image data'))
             reader.readAsArrayBuffer(blob)
           }, `image/${format}`)
           
@@ -1154,7 +1154,7 @@ class AssetsBuilder {
       
       img.onerror = () => {
         URL.revokeObjectURL(url)
-        reject(new Error('无法加载图片'))
+        reject(new Error('Unable to load image'))
       }
       
       img.src = url
@@ -1198,7 +1198,7 @@ class AssetsBuilder {
       
       img.onerror = () => {
         URL.revokeObjectURL(url)
-        reject(new Error('无法获取图片尺寸'))
+        reject(new Error('Unable to get image dimensions'))
       }
       
       img.src = url
@@ -1326,7 +1326,7 @@ class AssetsBuilder {
       
       img.onerror = () => {
         URL.revokeObjectURL(url)
-        reject(new Error('无法加载图片'))
+        reject(new Error('Unable to load image'))
       }
       
       img.src = url
@@ -1353,9 +1353,9 @@ class AssetsBuilder {
     try {
       await this.configStorage.clearAll()
       this.cleanup()
-      console.log('所有存储数据已清理')
+      console.log('All stored data cleared')
     } catch (error) {
-      console.error('清理存储数据失败:', error)
+      console.error('Failed to clear stored data:', error)
       throw error
     }
   }
@@ -1375,7 +1375,7 @@ class AssetsBuilder {
         autoSaveEnabled: this.autoSaveEnabled
       }
     } catch (error) {
-      console.error('获取存储状态失败:', error)
+      console.error('Failed to get storage status:', error)
       return {
         hasStoredData: false,
         storageInfo: null,
@@ -1390,7 +1390,7 @@ class AssetsBuilder {
    */
   setAutoSave(enabled) {
     this.autoSaveEnabled = enabled
-    console.log(`自动保存已${enabled ? '启用' : '禁用'}`)
+    console.log(`Auto-save ${enabled ? 'enabled' : 'disabled'}`)
   }
 
   /**
@@ -1415,20 +1415,20 @@ class AssetsBuilder {
       let description = ''
       switch (file.type) {
         case 'wakeword':
-          description = `唤醒词模型: ${file.name} (${file.modelType})`
+          description = `Wakeword model: ${file.name} (${file.modelType})`
           break
         case 'font':
           if (file.config) {
-            description = `自定义字体: 大小${file.config.size}px, BPP${file.config.bpp}`
+            description = `Custom font: size ${file.config.size}px, BPP ${file.config.bpp}`
           } else {
-            description = `预设字体: ${file.source}`
+            description = `Preset font: ${file.source}`
           }
           break
         case 'emoji':
-          description = `表情: ${file.name} (${file.size.width}x${file.size.height})`
+          description = `Emoji: ${file.name} (${file.size.width}x${file.size.height})`
           break
         case 'background':
-          description = `${file.mode === 'light' ? '浅色' : '深色'}模式背景`
+          description = `${file.mode === 'light' ? 'Light' : 'Dark'} mode background`
           break
       }
       

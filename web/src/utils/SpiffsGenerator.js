@@ -39,7 +39,7 @@ class SpiffsGenerator {
    */
   addFile(filename, data, options = {}) {
     if (filename.length > 32) {
-      console.warn(`文件名 "${filename}" 超过32字节，将被截断`)
+      console.warn(`Filename "${filename}" exceeds 32 bytes and will be truncated`)
     }
 
     this.files.push({
@@ -97,7 +97,7 @@ class SpiffsGenerator {
         const height = view.getUint16(16, true) // 小端序
         return { width, height }
       } catch (error) {
-        console.warn(`解析特殊图片格式失败: ${filename}`, error)
+        console.warn(`Failed to parse special image format: ${filename}`, error)
       }
     }
     
@@ -188,10 +188,10 @@ class SpiffsGenerator {
    */
   async generate(progressCallback = null) {
     if (this.files.length === 0) {
-      throw new Error('没有文件可打包')
+      throw new Error('No files to package')
     }
 
-    if (progressCallback) progressCallback(0, '开始打包文件...')
+    if (progressCallback) progressCallback(0, 'Starting to package files...')
 
     // 排序文件
     const sortedFiles = this.sortFiles(this.files)
@@ -207,7 +207,7 @@ class SpiffsGenerator {
       let height = file.height
 
       if (progressCallback) {
-        progressCallback(10 + (i / totalFiles) * 30, `处理文件: ${file.filename}`)
+        progressCallback(10 + (i / totalFiles) * 30, `Processing file: ${file.filename}`)
       }
 
       // 如果没有提供尺寸信息，尝试自动获取
@@ -240,7 +240,7 @@ class SpiffsGenerator {
       mergedDataSize += 2 + file.size // 2字节前缀 + 文件数据
     }
 
-    if (progressCallback) progressCallback(40, '构建文件映射表...')
+    if (progressCallback) progressCallback(40, 'Building file mapping table...')
 
     // 构建映射表
     const mmapTableSize = totalFiles * (32 + 4 + 4 + 2 + 2) // name + size + offset + width + height
@@ -269,7 +269,7 @@ class SpiffsGenerator {
       mmapOffset += 2
     }
 
-    if (progressCallback) progressCallback(60, '合并文件数据...')
+    if (progressCallback) progressCallback(60, 'Merging file data...')
 
     // 合并文件数据
     const mergedData = new Uint8Array(mergedDataSize)
@@ -279,7 +279,7 @@ class SpiffsGenerator {
       const fileInfo = fileInfoList[i]
       
       if (progressCallback) {
-        progressCallback(60 + (i / totalFiles) * 20, `合并文件: ${fileInfo.filename}`)
+        progressCallback(60 + (i / totalFiles) * 20, `Merging file: ${fileInfo.filename}`)
       }
 
       // 添加0x5A5A前缀
@@ -292,7 +292,7 @@ class SpiffsGenerator {
       mergedOffset += fileInfo.size
     }
 
-    if (progressCallback) progressCallback(80, '计算校验和...')
+    if (progressCallback) progressCallback(80, 'Computing checksum...')
 
     // 计算组合数据的校验和
     const combinedData = new Uint8Array(mmapTableSize + mergedDataSize)
@@ -302,7 +302,7 @@ class SpiffsGenerator {
     const checksum = this.computeChecksum(combinedData)
     const combinedDataLength = combinedData.length
 
-    if (progressCallback) progressCallback(90, '构建最终文件...')
+    if (progressCallback) progressCallback(90, 'Building final file...')
 
     // 构建最终输出
     const headerSize = 4 + 4 + 4 // total_files + checksum + combined_data_length
@@ -326,7 +326,7 @@ class SpiffsGenerator {
     // 写入组合数据
     finalData.set(combinedData, offset)
 
-    if (progressCallback) progressCallback(100, '打包完成')
+    if (progressCallback) progressCallback(100, 'Packaging completed')
 
     return finalData.buffer
   }
@@ -358,11 +358,11 @@ class SpiffsGenerator {
    * 打印打包的文件列表
    */
   printFileList() {
-    console.log('=== 打包文件列表 ===')
-    console.log(`总文件数: ${this.files.length}`)
+    console.log('=== Packaged File List ===')
+    console.log(`Total files: ${this.files.length}`)
 
     if (this.files.length === 0) {
-      console.log('暂无文件')
+      console.log('No files available')
       return
     }
 
@@ -375,20 +375,20 @@ class SpiffsGenerator {
       const dimensions = (file.width && file.height) ? `${file.width}x${file.height}` : 'N/A'
 
       console.log(`${String(index + 1).padStart(3, ' ')}. ${file.filename}`)
-      console.log(`    类型: ${ext.toUpperCase()}`)
-      console.log(`    大小: ${sizeKB} KB (${file.size} 字节)`)
-      console.log(`    尺寸: ${dimensions}`)
+      console.log(`    Type: ${ext.toUpperCase()}`)
+      console.log(`    Size: ${sizeKB} KB (${file.size} bytes)`)
+      console.log(`    Dimensions: ${dimensions}`)
       console.log('')
     })
 
     // 打印统计信息
     const stats = this.getStats()
-    console.log('=== 文件统计 ===')
-    console.log(`总大小: ${(stats.totalSize / 1024).toFixed(2)} KB`)
-    console.log(`平均大小: ${(stats.averageFileSize / 1024).toFixed(2)} KB`)
-    console.log('文件类型分布:')
+    console.log('=== File Statistics ===')
+    console.log(`Total size: ${(stats.totalSize / 1024).toFixed(2)} KB`)
+    console.log(`Average size: ${(stats.averageFileSize / 1024).toFixed(2)} KB`)
+    console.log('File type distribution:')
     Object.entries(stats.fileTypes).forEach(([ext, count]) => {
-      console.log(`  ${ext.toUpperCase()}: ${count} 个文件`)
+      console.log(`  ${ext.toUpperCase()}: ${count} files`)
     })
   }
 

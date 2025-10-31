@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">步骤 1: 芯片型号和屏幕配置</h2>
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ $t('chipConfig.title') }}</h2>
       <p class="text-gray-600 mb-6">
-        <span v-if="isLoadingConfig">正在从设备读取硬件配置...</span>
-        <span v-else-if="deviceConfigLoaded">已从设备自动读取硬件配置</span>
-        <span v-else>请手动配置硬件参数</span>
+        <span v-if="isLoadingConfig">{{ $t('chipConfig.loadingFromDevice') }}</span>
+        <span v-else-if="deviceConfigLoaded">{{ $t('chipConfig.loadedFromDevice') }}</span>
+        <span v-else>{{ $t('chipConfig.manualConfig') }}</span>
       </p>
     </div>
 
@@ -19,8 +19,8 @@
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           <div>
-            <h3 class="text-lg font-medium text-blue-900">正在加载设备配置...</h3>
-            <p class="text-sm text-blue-700 mt-1">从设备读取芯片型号和屏幕分辨率</p>
+            <h3 class="text-lg font-medium text-blue-900">{{ $t('chipConfig.loadingTitle') }}</h3>
+            <p class="text-sm text-blue-700 mt-1">{{ $t('chipConfig.loadingDesc') }}</p>
           </div>
         </div>
       </div>
@@ -36,29 +36,29 @@
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
               </svg>
             </div>
-            <h3 class="text-lg font-medium text-green-900">设备配置已自动加载</h3>
+            <h3 class="text-lg font-medium text-green-900">{{ $t('chipConfig.autoLoadedTitle') }}</h3>
           </div>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           <div class="bg-white rounded-lg p-3">
-            <label class="block text-sm font-medium text-gray-700 mb-1">芯片型号</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('chipConfig.chipModel') }}</label>
             <div class="text-base font-semibold text-gray-900">{{ currentChipModel }}</div>
           </div>
           
           <div class="bg-white rounded-lg p-3">
-            <label class="block text-sm font-medium text-gray-700 mb-1">屏幕宽度</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('chipConfig.screenWidth') }}</label>
             <div class="text-base font-semibold text-gray-900">{{ currentDisplay.width }} px</div>
           </div>
           
           <div class="bg-white rounded-lg p-3">
-            <label class="block text-sm font-medium text-gray-700 mb-1">屏幕高度</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('chipConfig.screenHeight') }}</label>
             <div class="text-base font-semibold text-gray-900">{{ currentDisplay.height }} px</div>
           </div>
         </div>
 
         <div class="mt-3 text-sm text-green-700">
-          ✓ 颜色格式: {{ currentDisplay.color }}
+          ✓ {{ $t('chipConfig.colorFormat') }} {{ currentDisplay.color }}
         </div>
       </div>
 
@@ -72,7 +72,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
           </svg>
-          {{ showManualEdit ? '收起手动配置' : '手动修改配置' }}
+          {{ showManualEdit ? $t('chipConfig.collapseManual') : $t('chipConfig.manualEdit') }}
         </button>
         
         <!-- 使用可复用的配置表单 -->
@@ -90,9 +90,9 @@
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
           </svg>
           <div>
-            <h4 class="font-medium text-yellow-900">无法自动读取设备配置</h4>
+            <h4 class="font-medium text-yellow-900">{{ $t('chipConfig.manualConfigDesc') }}</h4>
             <p class="text-sm text-yellow-700 mt-1">
-              {{ loadingError || '设备未连接或离线，请手动输入硬件配置' }}
+              {{ loadingError || $t('chipConfig.manualConfigHint') }}
             </p>
           </div>
         </div>
@@ -100,7 +100,7 @@
 
       <!-- 手动配置表单 -->
       <div class="border-2 border-gray-300 rounded-lg p-4">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">手动配置硬件参数</h3>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $t('chipConfig.manualConfigTitle') }}</h3>
         <ConfigForm :config="customConfig" :show-required="true" />
       </div>
     </div>
@@ -112,15 +112,18 @@
         :disabled="!hasValidConfig"
         class="bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg font-medium transition-colors"
       >
-        下一步
+        {{ $t('chipConfig.next') }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, h } from 'vue'
+import { ref, computed, watch, onMounted, h, unref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDeviceStatus } from '@/composables/useDeviceStatus'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {
@@ -139,16 +142,16 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'next'])
 
 // 芯片型号选项常量
-const CHIP_OPTIONS = [
-  { value: '', label: '请选择芯片' },
+const CHIP_OPTIONS = computed(() => [
+  { value: '', label: t('chipConfig.selectChip') },
   { value: 'esp32s3', label: 'ESP32-S3' },
   { value: 'esp32c3', label: 'ESP32-C3' },
   { value: 'esp32c5', label: 'ESP32-C5' },
   { value: 'esp32c6', label: 'ESP32-C6' },
   { value: 'esp32p4', label: 'ESP32-P4' },
   { value: 'esp32', label: 'ESP32' },
-  { value: 'others', label: '其他' }
-]
+  { value: 'others', label: t('common.other') }
+])
 
 // 定义可复用的配置表单组件（使用渲染函数）
 const ConfigForm = {
@@ -164,26 +167,27 @@ const ConfigForm = {
     }
   },
   render() {
+    const t = this.$t
     return h('div', { class: 'grid grid-cols-1 md:grid-cols-3 gap-4' }, [
       // 芯片型号选择
       h('div', [
         h('label', { class: 'block text-sm font-medium text-gray-700 mb-2' }, [
-          '芯片型号 ',
+          t('chipConfig.chipRequired') + ' ',
           this.showRequired && h('span', { class: 'text-red-500' }, '*')
         ]),
         h('select', {
           class: 'w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500',
           value: this.config.model,
           onChange: (e) => { this.config.model = e.target.value }
-        }, CHIP_OPTIONS.map(option => 
+        }, unref(CHIP_OPTIONS).map(option =>
           h('option', { value: option.value, key: option.value }, option.label)
         ))
       ]),
-      
+
       // 屏幕宽度
       h('div', [
         h('label', { class: 'block text-sm font-medium text-gray-700 mb-2' }, [
-          '屏幕宽度 ',
+          t('chipConfig.widthRequired') + ' ',
           this.showRequired && h('span', { class: 'text-red-500' }, '*')
         ]),
         h('input', {
@@ -196,11 +200,11 @@ const ConfigForm = {
           onInput: (e) => { this.config.display.width = Number(e.target.value) }
         })
       ]),
-      
+
       // 屏幕高度
       h('div', [
         h('label', { class: 'block text-sm font-medium text-gray-700 mb-2' }, [
-          '屏幕高度 ',
+          t('chipConfig.heightRequired') + ' ',
           this.showRequired && h('span', { class: 'text-red-500' }, '*')
         ]),
         h('input', {
@@ -262,7 +266,7 @@ const loadConfigFromDevice = () => {
     if (!isDeviceOnline.value) {
       // 设备离线时，如果还在加载状态，不立即失败（可能正在连接）
       if (!isLoadingConfig.value) {
-        loadingError.value = '设备未连接或离线'
+        loadingError.value = t('chipConfig.deviceOffline')
         deviceConfigLoaded.value = false
       }
       return false
@@ -297,7 +301,7 @@ const loadConfigFromDevice = () => {
     // 解析分辨率
     const [width, height] = resolution.split('x').map(Number)
     if (!width || !height || isNaN(width) || isNaN(height)) {
-      loadingError.value = '屏幕分辨率格式错误'
+      loadingError.value = t('chipConfig.resolutionFormatError')
       deviceConfigLoaded.value = false
       isLoadingConfig.value = false
       return false
@@ -331,7 +335,7 @@ const loadConfigFromDevice = () => {
 
   } catch (error) {
     console.error('加载设备配置失败:', error)
-    loadingError.value = '加载配置时发生错误'
+    loadingError.value = t('chipConfig.loadingError')
     deviceConfigLoaded.value = false
     isLoadingConfig.value = false
     return false
@@ -399,7 +403,7 @@ onMounted(() => {
   // 如果没有 token，直接使用手动配置模式
   if (!hasToken.value) {
     isLoadingConfig.value = false
-    loadingError.value = '请手动输入硬件配置'
+    loadingError.value = t('chipConfig.manualConfigRequired')
     console.log('⚠ 未检测到设备连接，使用手动配置模式')
     return
   }
@@ -430,11 +434,11 @@ onMounted(() => {
         if (isDeviceOnline.value) {
           isLoadingConfig.value = false
           if (!deviceInfo.value.chip || deviceInfo.value.chip.model === '未知') {
-            loadingError.value = '无法获取芯片型号，请手动输入'
+            loadingError.value = t('chipConfig.chipModelError')
           } else if (!deviceInfo.value.screen || deviceInfo.value.screen.resolution === '未知') {
-            loadingError.value = '无法获取屏幕分辨率，请手动输入'
+            loadingError.value = t('chipConfig.resolutionError')
           } else {
-            loadingError.value = '加载设备配置超时，请手动输入'
+            loadingError.value = t('chipConfig.timeoutError')
           }
           console.warn('⚠ 设备配置加载超时:', loadingError.value)
         }
@@ -450,7 +454,7 @@ onMounted(() => {
       if (isLoadingConfig.value && !deviceConfigLoaded.value && !isDeviceOnline.value) {
         // 额外检查：只有在设备确实还未上线时才显示超时错误
         isLoadingConfig.value = false
-        loadingError.value = '设备未连接或离线，请手动输入硬件配置'
+        loadingError.value = t('chipConfig.manualConfigHint')
         console.warn('⚠ 等待设备连接超时')
       }
     }, 10000) // 延长到10秒，给设备更多连接时间

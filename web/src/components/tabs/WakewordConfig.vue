@@ -1,17 +1,17 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">唤醒词配置</h3>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">{{ $t('wakewordConfig.title') }}</h3>
       <p class="text-gray-600">
-        根据您的芯片型号选择合适的唤醒词模型。
+        {{ $t('wakewordConfig.description') }}
         <span v-if="supportWakeNet9" class="text-blue-600">
-          您的芯片支持 WakeNet9 模型。
+          {{ $t('wakewordConfig.supportWakeNet9') }}
         </span>
         <span v-else-if="supportWakeNet9s" class="text-blue-600">
-          您的芯片支持 WakeNet9s 模型。
+          {{ $t('wakewordConfig.supportWakeNet9s') }}
         </span>
         <span v-else class="text-orange-600">
-          您的芯片不支持唤醒词功能。
+          {{ $t('wakewordConfig.notSupported') }}
         </span>
       </p>
     </div>
@@ -19,14 +19,14 @@
     <!-- 不支持唤醒词的提示 -->
     <div v-if="!supportWakeNet9 && !supportWakeNet9s" class="bg-orange-50 border border-orange-200 rounded-lg p-4">
       <div class="text-sm text-orange-800">
-        <strong>注意：</strong>
-        <p class="mt-1">{{ chipModel }} 芯片不支持唤醒词功能。如需使用唤醒词，请选择 ESP32-S3、ESP32-P4 或 ESP32-C3/C5/C6 芯片。</p>
+        <strong>{{ $t('wakewordConfig.notice') }}：</strong>
+        <p class="mt-1">{{ $t('wakewordConfig.unsupportedMessage', { chipModel: chipModel }) }}</p>
       </div>
     </div>
 
     <!-- 唤醒词选择 -->
     <div v-else class="space-y-4">
-      <label class="block text-sm font-medium text-gray-700">选择唤醒词</label>
+      <label class="block text-sm font-medium text-gray-700">{{ $t('wakewordConfig.selectWakeword') }}</label>
       
       <!-- 下拉选择 -->
       <div class="relative">
@@ -35,7 +35,7 @@
           @change="selectWakeword($event.target.value)"
           class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         >
-          <option value="">请选择唤醒词（可选）</option>
+          <option value="">{{ $t('wakewordConfig.placeholder') }}</option>
           <option
             v-for="wakeword in availableWakewords"
             :key="wakeword.id"
@@ -49,11 +49,11 @@
       <!-- 提示信息 -->
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
         <div class="text-sm text-blue-800">
-          <strong>提示：</strong>
+          <strong>{{ $t('wakewordConfig.tips.tipLabel') }}</strong>
           <ul class="mt-1 list-disc list-inside space-y-1">
-            <li>唤醒词是可选的，不配置唤醒词时设备将无法语音唤醒</li>
-            <li v-if="supportWakeNet9s">C3/C5/C6 芯片仅支持 WakeNet9s 轻量级模型</li>
-            <li v-else-if="supportWakeNet9">S3/P4 芯片支持完整的 WakeNet9 模型，选择更多</li>
+            <li>{{ $t('wakewordConfig.tips.optional') }}</li>
+            <li v-if="supportWakeNet9s">{{ $t('wakewordConfig.tips.wakeNet9sOnly') }}</li>
+            <li v-else-if="supportWakeNet9">{{ $t('wakewordConfig.tips.wakeNet9Full') }}</li>
           </ul>
         </div>
       </div>

@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">步骤 3: 效果预览</h2>
-      <p class="text-gray-600 mb-6">预览您的自定义配置在实际设备上的效果。</p>
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ $t('generateSummary.title') }}</h2>
+      <p class="text-gray-600 mb-6">{{ $t('generateSummary.description') }}</p>
     </div>
 
     <!-- 设备预览区域 -->
     <div class="flex flex-col lg:flex-row gap-8">
       <!-- 设备模拟器 -->
       <div class="flex-1">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">设备预览 (1:1 像素比例)</h3>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $t('generateSummary.devicePreview') }}</h3>
         <div class="bg-gray-100 p-4 rounded-lg">
           <div class="max-w-full overflow-auto flex justify-center">
             <!-- 设备外框 -->
@@ -53,7 +53,7 @@
                       >
                         <div class="text-center">
                           <div class="text-sm">😕</div>
-                          <div class="text-xs">未配置表情</div>
+                          <div class="text-xs">{{ $t('generateSummary.noEmotionConfigured') }}</div>
                         </div>
                       </div>
                     </div>
@@ -65,7 +65,7 @@
                     class="text-message max-w-full break-words relative"
                   >
                     <div v-if="!fontLoaded" class="absolute inset-0 flex items-center justify-center">
-                      <div class="animate-pulse text-gray-400 text-xs">字体加载中...</div>
+                      <div class="animate-pulse text-gray-400 text-xs">{{ $t('generateSummary.fontLoading') }}</div>
                     </div>
                     <div :class="{ 'opacity-0': !fontLoaded }">
                       {{ previewText }}
@@ -87,23 +87,23 @@
 
       <!-- 控制面板 -->
       <div class="w-full lg:w-80">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">预览设置</h3>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $t('generateSummary.previewSettings') }}</h3>
         <div class="space-y-6 bg-white border border-gray-200 rounded-lg p-4">
           
           <!-- 文字内容编辑 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">预览文字</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('generateSummary.previewText') }}</label>
             <textarea
               v-model="previewText"
               class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               rows="3"
-              placeholder="Hi，我是你的好朋友小智！"
+              placeholder="Hi, I'm your friend Xiaozhi!"
             ></textarea>
           </div>
 
           <!-- 表情切换 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">当前表情</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('generateSummary.currentEmotion') }}</label>
             <div v-if="availableEmotions.length > 0" class="flex flex-wrap gap-2 max-h-32 overflow-y-auto justify-center">
               <button
                 v-for="emotion in availableEmotions"
@@ -131,13 +131,13 @@
             </div>
             <div v-else class="text-center py-4 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed">
               <div class="text-2xl mb-2">😕</div>
-              <div class="text-sm">请先在主题设计中配置表情包</div>
+              <div class="text-sm">{{ $t('generateSummary.configureEmojiFirst') }}</div>
             </div>
           </div>
 
           <!-- 主题模式切换 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">主题模式</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('generateSummary.themeMode') }}</label>
             <div class="flex space-x-2">
               <button
                 @click="themeMode = 'light'"
@@ -148,7 +148,7 @@
                     : 'border-gray-300 hover:border-gray-400'
                 ]"
               >
-                🌞 浅色
+                🌞 {{ $t('generateSummary.lightMode') }}
               </button>
               <button
                 @click="themeMode = 'dark'"
@@ -159,7 +159,7 @@
                     : 'border-gray-300 hover:border-gray-400'
                 ]"
               >
-                🌙 深色
+                🌙 {{ $t('generateSummary.darkMode') }}
               </button>
             </div>
           </div>
@@ -167,16 +167,16 @@
 
           <!-- 配置摘要 -->
           <div class="border-t pt-4">
-            <h4 class="font-medium text-gray-900 mb-2">配置摘要</h4>
+            <h4 class="font-medium text-gray-900 mb-2">{{ $t('generateSummary.configSummary') }}</h4>
             <div class="text-xs text-gray-600 space-y-1">
-              <div v-if="config.theme.wakeword">唤醒词: {{ getWakewordName() }}</div>
+              <div v-if="config.theme.wakeword">{{ $t('generateSummary.wakeword') }} {{ getWakewordName() }}</div>
               <div class="flex items-center">
-                <span>字体: {{ getFontName() }}</span>
-                <span v-if="!fontLoaded" class="ml-2 animate-pulse text-blue-500">加载中...</span>
+                <span>{{ $t('generateSummary.font') }} {{ getFontName() }}</span>
+                <span v-if="!fontLoaded" class="ml-2 animate-pulse text-blue-500">{{ $t('generateSummary.loading') }}</span>
                 <span v-else class="ml-2 text-green-500">✓</span>
               </div>
-              <div>表情: {{ getEmojiName() }}</div>
-              <div>皮肤: {{ getSkinName() }}</div>
+              <div>{{ $t('generateSummary.emotion') }} {{ getEmojiName() }}</div>
+              <div>{{ $t('generateSummary.skin') }} {{ getSkinName() }}</div>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@
         @click="$emit('prev')"
         class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
       >
-        上一步
+        {{ $t('generateSummary.previous') }}
       </button>
       <button 
         @click="$emit('generate')"
@@ -198,7 +198,7 @@
         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
         </svg>
-        生成 assets.bin
+        {{ $t('generateSummary.generate') }}
       </button>
     </div>
   </div>
@@ -206,6 +206,9 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   config: {
@@ -217,36 +220,36 @@ const props = defineProps({
 defineEmits(['prev', 'generate'])
 
 // 预览状态
-const previewText = ref('Hi，我是你的好朋友小智！')
+const previewText = ref(t('generateSummary.defaultPreviewText'))
 const currentEmoji = ref('happy')
 const themeMode = ref('light')
 const fontLoaded = ref(false)
 const loadedFontFamily = ref('')
 
 // 表情数据
-const emotionList = [
-  { key: 'neutral', name: '默认', emoji: '😶' },
-  { key: 'happy', name: '开心', emoji: '🙂' },
-  { key: 'laughing', name: '大笑', emoji: '😆' },
-  { key: 'funny', name: '搞笑', emoji: '😂' },
-  { key: 'sad', name: '伤心', emoji: '😔' },
-  { key: 'angry', name: '生气', emoji: '😠' },
-  { key: 'crying', name: '哭泣', emoji: '😭' },
-  { key: 'loving', name: '喜爱', emoji: '😍' },
-  { key: 'surprised', name: '惊讶', emoji: '😯' },
-  { key: 'thinking', name: '思考', emoji: '🤔' },
-  { key: 'cool', name: '酷炫', emoji: '😎' },
-  { key: 'sleepy', name: '困倦', emoji: '😴' }
-]
+const emotionList = computed(() => [
+  { key: 'neutral', name: t('generateSummary.emotions.neutral'), emoji: '😶' },
+  { key: 'happy', name: t('generateSummary.emotions.happy'), emoji: '🙂' },
+  { key: 'laughing', name: t('generateSummary.emotions.laughing'), emoji: '😆' },
+  { key: 'funny', name: t('generateSummary.emotions.funny'), emoji: '😂' },
+  { key: 'sad', name: t('generateSummary.emotions.sad'), emoji: '😔' },
+  { key: 'angry', name: t('generateSummary.emotions.angry'), emoji: '😠' },
+  { key: 'crying', name: t('generateSummary.emotions.crying'), emoji: '😭' },
+  { key: 'loving', name: t('generateSummary.emotions.loving'), emoji: '😍' },
+  { key: 'surprised', name: t('generateSummary.emotions.surprised'), emoji: '😯' },
+  { key: 'thinking', name: t('generateSummary.emotions.thinking'), emoji: '🤔' },
+  { key: 'cool', name: t('generateSummary.emotions.cool'), emoji: '😎' },
+  { key: 'sleepy', name: t('generateSummary.emotions.sleepy'), emoji: '😴' }
+])
 
 // 可用的表情列表
 const availableEmotions = computed(() => {
   if (props.config.theme.emoji.type === 'preset' && props.config.theme.emoji.preset) {
-    return emotionList
+    return emotionList.value
   } else if (props.config.theme.emoji.type === 'custom') {
     // 只显示用户上传的表情
     const customImages = props.config.theme.emoji.custom.images
-    return emotionList.filter(emotion => customImages[emotion.key])
+    return emotionList.value.filter(emotion => customImages[emotion.key])
   } else {
     // 未配置表情时返回空数组
     return []
@@ -444,7 +447,7 @@ const getEmotionImage = (emotionKey) => {
 
 // 获取表情字符
 const getEmojiCharacter = (emotionKey) => {
-  const emotion = emotionList.find(e => e.key === emotionKey)
+  const emotion = emotionList.value.find(e => e.key === emotionKey)
   return emotion ? emotion.emoji : '😶'
 }
 
@@ -496,7 +499,7 @@ const getFontName = () => {
     return presetNames[props.config.theme.font.preset] || props.config.theme.font.preset
   } else {
     const custom = props.config.theme.font.custom
-    return `自定义字体 ${custom.size}px`
+    return t('generateSummary.customFont', { size: custom.size })
   }
 }
 
@@ -505,16 +508,16 @@ const getEmojiName = () => {
     return props.config.theme.emoji.preset === 'twemoji64' ? 'Twemoji 64×64' : 'Twemoji 32×32'
   } else if (props.config.theme.emoji.type === 'custom') {
     const count = Object.keys(props.config.theme.emoji.custom.images).length
-    return `自定义表情 ${count}张`
+    return t('generateSummary.customEmoji', { count })
   } else {
-    return '未配置'
+    return t('generateSummary.notConfigured')
   }
 }
 
 const getSkinName = () => {
-  const light = props.config.theme.skin.light.backgroundType === 'image' ? '图片' : '颜色'
-  const dark = props.config.theme.skin.dark.backgroundType === 'image' ? '图片' : '颜色'
-  return `浅色${light}/深色${dark}`
+  const lightType = props.config.theme.skin.light.backgroundType === 'image' ? t('generateSummary.image') : t('generateSummary.color')
+  const darkType = props.config.theme.skin.dark.backgroundType === 'image' ? t('generateSummary.image') : t('generateSummary.color')
+  return t('generateSummary.skinLight', { type: lightType }) + '/' + t('generateSummary.skinDark', { type: darkType })
 }
 
 // 监听字体配置变化

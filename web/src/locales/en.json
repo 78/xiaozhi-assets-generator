@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Xiaozhi AI Custom Resource Generator"
+    "title": "Xiaozhi AI Customization"
   },
   "common": {
     "cancel": "Cancel",
@@ -25,7 +25,7 @@
     "other": "Other"
   },
   "header": {
-    "title": "Xiaozhi AI Custom Resource Generator"
+    "title": "Xiaozhi AI Customization"
   },
   "configNotice": {
     "title": "Saved Configuration Detected",
@@ -59,7 +59,17 @@
     "flashing": "Flashing to device...",
     "flashingCancel": "Cancel Flash",
     "flashingError": "Flashing Error",
-    "flashingInProgress": "Flashing in progress, please do not close the window"
+    "flashingInProgress": "Flashing in progress, please do not close the window",
+    "customFont": "Custom Font",
+    "customEmoji": "Custom Emoji Package",
+    "notConfigured": "Not Configured",
+    "wakewordNames": {
+      "wn9s_hilexin": "Hi, Espressif",
+      "wn9s_hiesp": "Hi, ESP",
+      "wn9s_nihaoxiaozhi": "Hello Xiaozhi",
+      "wn9_nihaoxiaozhi_tts": "Hello Xiaozhi",
+      "wn9_alexa": "Alexa"
+    }
   },
   "progressSteps": {
     "init": "Initialize Generator",
@@ -82,6 +92,7 @@
     "selectWakeword": "Select Wake Word",
     "placeholder": "Select wake word (optional)",
     "tips": {
+      "tipLabel": "Tip:",
       "optional": "Wake words are optional. Without wake words, the device cannot be voice-activated.",
       "wakeNet9sOnly": "C3/C5/C6 chips only support WakeNet9s lightweight models.",
       "wakeNet9Full": "S3/P4 chips support complete WakeNet9 models with more choices."
@@ -97,6 +108,22 @@
     "oldDataCleared": "Old version emoji data structure has been detected and cleared.\n\nThe new version uses file deduplication technology to save storage space.\n\nPlease re-upload custom emoji images.",
     "incompatibleEmojiData": "Incompatible emoji data detected, please reconfigure"
   },
+  "flashProgress": {
+    "authTokenMissing": "Authentication token not found",
+    "checkingDeviceStatus": "Checking device status...",
+    "deviceOfflineOrUnresponsive": "Device offline or unresponsive: {error}",
+    "unableToGetDeviceStatus": "Unable to get device status",
+    "initializingTransferService": "Initializing transfer service...",
+    "initializeTransferFailed": "Failed to initialize transfer service: {error}",
+    "settingDeviceDownloadUrl": "Setting device download URL...",
+    "setDownloadUrlFailed": "Failed to set download URL: {error}",
+    "rebootingDevice": "Rebooting device...",
+    "waitingForDeviceReboot": "Waiting for device to reboot...",
+    "deviceRebootTimeout": "Device reboot timeout (60 seconds)",
+    "startingFileTransfer": "Starting file transfer...",
+    "flashCompleted": "Flashing completed!",
+    "onlineFlashFailed": "Online flashing failed: {error}"
+  },
   "device": {
     "online": "Online",
     "offline": "Offline",
@@ -106,7 +133,14 @@
     "chip": "Chip",
     "board": "Board",
     "flash": "Flash",
-    "screen": "Screen"
+    "screen": "Screen",
+    "signal": {
+      "unknown": "Unknown",
+      "strong": "Strong",
+      "medium": "Medium",
+      "weak": "Weak",
+      "none": "No Signal"
+    }
   },
   "chipConfig": {
     "title": "Step 1: Chip Model and Screen Configuration",
@@ -134,7 +168,9 @@
     "resolutionError": "Unable to get screen resolution, please enter manually",
     "timeoutError": "Configuration loading timeout, please enter manually",
     "manualConfigDesc": "Unable to auto-read device configuration",
-    "manualConfigHint": "Device not connected or offline, please manually input hardware configuration"
+    "manualConfigHint": "Device not connected or offline, please manually input hardware configuration",
+    "manualConfigRequired": "Please manually input hardware configuration",
+    "resolutionFormatError": "Screen resolution format error"
   },
   "themeDesign": {
     "title": "Step 2: Theme Design",
@@ -148,12 +184,13 @@
       "background": "Chat Background"
     }
   },
-  "generateSummary": {
+    "generateSummary": {
     "title": "Step 3: Preview",
     "description": "Preview the effect of your custom configuration on the actual device.",
     "devicePreview": "Device Preview (1:1 Pixel Ratio)",
     "previewSettings": "Preview Settings",
     "previewText": "Preview Text",
+    "defaultPreviewText": "Hi, I'm your friend Xiaozhi!",
     "currentEmotion": "Current Emotion",
     "themeMode": "Theme Mode",
     "lightMode": "Light",
@@ -262,6 +299,7 @@
     "sharedFileMessage": "Emotion {emotionKey} uses the same image file as {existingEmotions} (shared storage)",
     "fileDeleted": "File {fileHash} has been deleted (no other emotion references)",
     "fileRetained": "File {fileHash} is still used by other emotions, retained",
+    "imageLoadFailed": "Failed to load emoji image",
     "emotions": {
       "neutral": "Neutral",
       "happy": "Happy",
@@ -313,6 +351,13 @@
     "gb2312": "GB2312 (7445 characters)",
     "latin1": "Latin1 (190 characters)",
     "recommendedDeepseek": "Recommended: DeepSeek R1",
-    "selectValidFontFile": "Please select a valid font file (TTF, WOFF, WOFF2)"
+    "selectValidFontFile": "Please select a valid font file (TTF, WOFF, WOFF2)",
+    "presetFontNames": {
+      "font_puhui_deepseek_14_1": "Alibaba PuHuiTi 14px",
+      "font_puhui_deepseek_16_4": "Alibaba PuHuiTi 16px",
+      "font_puhui_deepseek_20_4": "Alibaba PuHuiTi 20px",
+      "font_puhui_deepseek_30_4": "Alibaba PuHuiTi 30px"
+    },
+    "commonCharset": "7000 common characters"
   }
 }

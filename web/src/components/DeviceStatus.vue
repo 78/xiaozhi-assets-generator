@@ -15,7 +15,7 @@
           'text-sm font-medium',
           deviceStatus.isOnline ? 'text-gray-700' : 'text-gray-500'
         ]">
-          {{ deviceStatus.isOnline ? '设备在线' : '设备离线' }}
+          {{ deviceStatus.isOnline ? $t('device.online') : $t('device.offline') }}
         </span>
       </div>
 
@@ -25,7 +25,7 @@
         <WifiIcon v-if="deviceInfo.network.type === 'wifi'" color="text-blue-500" />
         <!-- 4G信号图标 -->
         <Signal4GIcon v-else-if="deviceInfo.network.type === '4g'" />
-        <span class="text-xs text-gray-500">{{ getSignalDisplayText(deviceInfo.network.signal) }}</span>
+        <span class="text-xs text-gray-500">{{ getSignalDisplayText(deviceInfo.network.signal, t) }}</span>
       </div>
     </div>
 
@@ -73,7 +73,7 @@
           'text-sm font-medium',
           deviceStatus.isOnline ? 'text-gray-800' : 'text-gray-600'
         ]">
-          {{ deviceStatus.isOnline ? '设备在线' : '设备离线' }}
+          {{ deviceStatus.isOnline ? $t('device.online') : $t('device.offline') }}
         </span>
       </div>
 
@@ -81,7 +81,7 @@
       <div v-if="deviceStatus.isOnline && deviceInfo.network" class="flex items-center space-x-1">
         <WifiIcon v-if="deviceInfo.network.type === 'wifi'" color="text-blue-500" />
         <Signal4GIcon v-else-if="deviceInfo.network.type === '4g'" />
-        <span class="text-xs font-medium text-gray-600">{{ getSignalDisplayText(deviceInfo.network.signal) }}</span>
+        <span class="text-xs font-medium text-gray-600">{{ getSignalDisplayText(deviceInfo.network.signal, t) }}</span>
       </div>
     </div>
 
@@ -93,7 +93,7 @@
           <div v-if="deviceInfo.chip" class="flex items-center space-x-2 flex-1">
             <ChipIcon class="flex-shrink-0" />
             <div class="min-w-0 flex-1">
-              <div class="text-xs text-gray-500 leading-tight">芯片</div>
+              <div class="text-xs text-gray-500 leading-tight">{{ $t('device.chip') }}</div>
               <div class="text-sm text-gray-800 font-medium truncate">{{ deviceInfo.chip.model }}</div>
             </div>
           </div>
@@ -101,7 +101,7 @@
           <div v-if="deviceInfo.board" class="flex items-center space-x-2 flex-1 ml-3">
             <BoardIcon class="flex-shrink-0" />
             <div class="min-w-0 flex-1">
-              <div class="text-xs text-gray-500 leading-tight">开发板</div>
+              <div class="text-xs text-gray-500 leading-tight">{{ $t('device.board') }}</div>
               <div class="text-sm text-gray-800 font-medium truncate">{{ deviceInfo.board.model }}</div>
             </div>
           </div>
@@ -112,7 +112,7 @@
           <div v-if="deviceInfo.flash" class="flex items-center space-x-2 flex-1">
             <FlashIcon class="flex-shrink-0" />
             <div class="min-w-0 flex-1">
-              <div class="text-xs text-gray-500 leading-tight">Flash</div>
+              <div class="text-xs text-gray-500 leading-tight">{{ $t('device.flash') }}</div>
               <div class="text-sm text-gray-800 font-medium">{{ deviceInfo.flash.size }}</div>
             </div>
           </div>
@@ -120,7 +120,7 @@
           <div v-if="deviceInfo.screen" class="flex items-center space-x-2 flex-1 ml-3">
             <ScreenIcon class="flex-shrink-0" />
             <div class="min-w-0 flex-1">
-              <div class="text-xs text-gray-500 leading-tight">屏幕</div>
+              <div class="text-xs text-gray-500 leading-tight">{{ $t('device.screen') }}</div>
               <div class="text-sm text-gray-800 font-medium">{{ deviceInfo.screen.resolution }}</div>
             </div>
           </div>
@@ -133,8 +133,11 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDeviceStatus } from '@/composables/useDeviceStatus'
 import { WifiIcon, Signal4GIcon, ChipIcon, FlashIcon, BoardIcon, ScreenIcon } from '@/components/icons'
+
+const { t } = useI18n()
 
 // 使用共享的设备状态
 const {

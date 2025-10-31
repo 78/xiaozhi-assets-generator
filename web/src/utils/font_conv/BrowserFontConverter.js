@@ -24,13 +24,13 @@ class BrowserFontConverter {
     try {
       // 检查依赖是否可用
       if (typeof opentype === 'undefined') {
-        throw new Error('opentype.js 未加载')
+        throw new Error('opentype.js not loaded')
       }
       
       this.initialized = true
       console.log('BrowserFontConverter 初始化完成')
     } catch (error) {
-      console.error('BrowserFontConverter 初始化失败:', error)
+      console.error('BrowserFontConverter initialization failed:', error)
       throw error
     }
   }
@@ -73,7 +73,7 @@ class BrowserFontConverter {
       } else if (fontFile instanceof ArrayBuffer) {
         buffer = fontFile
       } else {
-        throw new Error('不支持的字体文件类型')
+        throw new Error('Unsupported font file type')
       }
       
       const font = opentype.parse(buffer)
@@ -90,7 +90,7 @@ class BrowserFontConverter {
         supported: true
       }
     } catch (error) {
-      console.error('获取字体信息失败:', error)
+      console.error('Failed to get font information:', error)
       return {
         familyName: 'Unknown',
         supported: false,
@@ -137,7 +137,7 @@ class BrowserFontConverter {
     }
 
     try {
-      if (progressCallback) progressCallback(0, '开始处理字体...')
+      if (progressCallback) progressCallback(0, 'Starting font processing...')
 
       // 准备字体数据
       let fontBuffer
@@ -147,12 +147,12 @@ class BrowserFontConverter {
         fontBuffer = fontFile
       }
 
-      if (progressCallback) progressCallback(10, '解析字体结构...')
+      if (progressCallback) progressCallback(10, 'Parsing font structure...')
 
       // 构建字符范围和符号（使用异步版本支持从文件加载字符集）
       const { ranges, charSymbols } = await this.parseCharacterInputAsync(charset, symbols, range)
 
-      if (progressCallback) progressCallback(20, '准备转换参数...')
+      if (progressCallback) progressCallback(20, 'Preparing conversion parameters...')
 
       // 构建转换参数
       const convertArgs = {
@@ -177,24 +177,24 @@ class BrowserFontConverter {
         output: fontName || 'font'
       }
 
-      if (progressCallback) progressCallback(30, '收集字体数据...')
+      if (progressCallback) progressCallback(30, 'Collecting font data...')
 
       // 收集字体数据
       const fontData = await collect_font_data(convertArgs)
 
-      if (progressCallback) progressCallback(70, '生成 CBIN 格式...')
+      if (progressCallback) progressCallback(70, 'Generating CBIN format...')
 
       // 生成 CBIN 数据
       const result = write_cbin(convertArgs, fontData)
       const outputName = convertArgs.output
       
-      if (progressCallback) progressCallback(100, '转换完成!')
+      if (progressCallback) progressCallback(100, 'Conversion completed!')
 
       return result[outputName]
 
     } catch (error) {
-      console.error('字体转换失败:', error)
-      throw new AppError(`字体转换失败: ${error.message}`)
+      console.error('Font conversion failed:', error)
+      throw new AppError(`Font conversion failed: ${error.message}`)
     }
   }
 

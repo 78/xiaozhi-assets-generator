@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">步骤 2: 主题设计</h2>
-      <p class="text-gray-600 mb-6">配置唤醒词、字体、表情和背景来自定义您的小智AI主题。</p>
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ $t('themeDesign.title') }}</h2>
+      <p class="text-gray-600 mb-6">{{ $t('themeDesign.description') }}</p>
     </div>
 
     <!-- Tab Navigation -->
@@ -58,14 +58,14 @@
         @click="$emit('prev')"
         class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
       >
-        上一步
+        {{ $t('themeDesign.previous') }}
       </button>
       <button 
         @click="handleNext"
         :disabled="!canProceed"
         class="bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg font-medium transition-colors"
       >
-        下一步
+        {{ $t('themeDesign.next') }}
       </button>
     </div>
   </div>
@@ -73,6 +73,9 @@
 
 <script setup>
 import { ref, computed, watch, h } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 import WakewordConfig from './tabs/WakewordConfig.vue'
 import FontConfig from './tabs/FontConfig.vue'
 import EmojiConfig from './tabs/EmojiConfig.vue'
@@ -160,12 +163,13 @@ const emit = defineEmits(['update:modelValue', 'next', 'prev', 'tabChange'])
 
 const currentTab = ref(props.activeTab)
 
-const tabs = [
-  { id: 'wakeword', name: '唤醒词配置', icon: MicrophoneIcon },
-  { id: 'font', name: '字体配置', icon: FontIcon },
-  { id: 'emoji', name: '表情集合', icon: EmojiIcon },
-  { id: 'background', name: '聊天背景', icon: BackgroundIcon }
-]
+// 使用计算属性来获取翻译后的tab名称
+const tabs = computed(() => [
+  { id: 'wakeword', name: t('themeDesign.tabs.wakeword'), icon: MicrophoneIcon },
+  { id: 'font', name: t('themeDesign.tabs.font'), icon: FontIcon },
+  { id: 'emoji', name: t('themeDesign.tabs.emoji'), icon: EmojiIcon },
+  { id: 'background', name: t('themeDesign.tabs.background'), icon: BackgroundIcon }
+])
 
 const localValue = computed({
   get: () => props.modelValue,

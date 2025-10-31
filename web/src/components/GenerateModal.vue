@@ -3,7 +3,7 @@
     <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
       <!-- 模态框头部 -->
       <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">生成 assets.bin</h3>
+        <h3 class="text-lg font-medium text-gray-900">{{ $t('generateModal.title') }}</h3>
         <button
           v-if="!isFlashing"
           @click="$emit('close')"
@@ -15,7 +15,7 @@
         </button>
         <!-- 烧录中提示 -->
         <div v-else class="text-sm text-orange-600 font-medium">
-          烧录中，请勿关闭窗口
+          {{ $t('generateModal.flashingInProgress') }}
         </div>
       </div>
 
@@ -24,26 +24,26 @@
         <div v-if="!isGenerating && !isCompleted" class="space-y-6">
           <!-- 配置确认 -->
           <div>
-            <h4 class="font-medium text-gray-900 mb-3">请确认您的配置</h4>
+            <h4 class="font-medium text-gray-900 mb-3">{{ $t('generateModal.confirmConfig') }}</h4>
             <div class="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600">芯片型号:</span>
+                <span class="text-gray-600">{{ $t('generateModal.chipModel') }}</span>
                 <span class="font-medium">{{ config.chip.model.toUpperCase() }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">分辨率:</span>
+                <span class="text-gray-600">{{ $t('generateModal.resolution') }}</span>
                 <span class="font-medium">{{ config.chip.display.width }}×{{ config.chip.display.height }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">唤醒词:</span>
+                <span class="text-gray-600">{{ $t('generateModal.wakeword') }}</span>
                 <span class="font-medium">{{ getWakewordName() }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">字体:</span>
+                <span class="text-gray-600">{{ $t('generateModal.font') }}</span>
                 <span class="font-medium">{{ getFontName() }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">表情包:</span>
+                <span class="text-gray-600">{{ $t('generateModal.emoji') }}</span>
                 <span class="font-medium">{{ getEmojiName() }}</span>
               </div>
             </div>
@@ -51,7 +51,7 @@
 
           <!-- 文件列表 -->
           <div>
-            <h4 class="font-medium text-gray-900 mb-3">包含的文件列表</h4>
+            <h4 class="font-medium text-gray-900 mb-3">{{ $t('generateModal.fileList') }}</h4>
             <div class="space-y-2 max-h-64 overflow-y-auto">
               <div
                 v-for="item in fileList"
@@ -64,8 +64,8 @@
                 </div>
                 <div class="text-sm text-gray-700">
                   {{ item.size }}
-                  <span v-if="item.estimated" class="text-xs text-gray-500 ml-1">预估</span>
-                  <span v-if="item.isCustomEmoji" class="text-xs text-gray-500 ml-1">压缩前</span>
+                  <span v-if="item.estimated" class="text-xs text-gray-500 ml-1">{{ $t('generateModal.estimated') }}</span>
+                  <span v-if="item.isCustomEmoji" class="text-xs text-gray-500 ml-1">{{ $t('generateModal.compressed') }}</span>
                 </div>
               </div>
             </div>
@@ -79,7 +79,7 @@
           </div>
           
           <div class="space-y-4">
-            <p class="text-gray-600 mt-2">正在生成 assets.bin</p>
+            <p class="text-gray-600 mt-2">{{ $t('generateModal.generating') }}</p>
             <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
               <div 
                 class="bg-primary-500 h-2 rounded-full transition-all duration-500 ease-out"
@@ -88,7 +88,7 @@
             </div>
             <div class="text-sm text-gray-600">
               <div>{{ currentStep }}</div>
-              <div class="mt-1">{{ progress }}% 完成</div>
+              <div class="mt-1">{{ $t('generateModal.progress', { progress: progress }) }}</div>
             </div>
           </div>
 
@@ -126,14 +126,14 @@
           </div>
           
           <div>
-            <p class="text-gray-600 mt-2">您的 assets.bin 文件已准备就绪</p>
+            <p class="text-gray-600 mt-2">{{ $t('generateModal.completed') }}</p>
           </div>
 
           <div class="bg-green-50 border border-green-200 rounded-lg p-4">
             <div class="text-sm text-green-800 space-y-1">
-              <div>文件名: assets.bin</div>
-              <div>文件大小: {{ generatedFileSize }}</div>
-              <div>生成时间: {{ generationTime }}</div>
+              <div>{{ $t('generateModal.filename') }}</div>
+              <div>{{ $t('generateModal.fileSize', { size: generatedFileSize }) }}</div>
+              <div>{{ $t('generateModal.generationTime', { time: generationTime }) }}</div>
             </div>
           </div>
 
@@ -145,7 +145,7 @@
               <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
-              下载 assets.bin
+              {{ $t('generateModal.downloadAssets') }}
             </button>
 
             <button
@@ -156,7 +156,7 @@
               <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
-              在线烧录到设备
+              {{ $t('generateModal.flashToDevice') }}
             </button>
           </div>
         </div>
@@ -169,7 +169,7 @@
           </div>
 
           <div class="space-y-4">
-            <p class="text-gray-600">正在烧录到设备</p>
+            <p class="text-gray-600">{{ $t('generateModal.flashing') }}</p>
             <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
               <div
                 class="bg-blue-500 h-2 rounded-full transition-all duration-500 ease-out"
@@ -178,7 +178,7 @@
             </div>
             <div class="text-sm text-gray-600">
               <div>{{ flashCurrentStep }}</div>
-              <div class="mt-1">{{ flashProgress }}% 完成</div>
+              <div class="mt-1">{{ $t('generateModal.progress', { progress: flashProgress }) }}</div>
             </div>
           </div>
 
@@ -187,7 +187,7 @@
             @click="cancelFlash"
             class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
           >
-            取消烧录
+            {{ $t('generateModal.flashingCancel') }}
           </button>
         </div>
 
@@ -204,7 +204,7 @@
           @click="$emit('close')"
           class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
         >
-          取消
+          {{ $t('common.cancel') }}
         </button>
         <button
           v-if="!isGenerating && !isCompleted"
@@ -212,14 +212,14 @@
           :disabled="!hasSelectedFiles"
           class="px-6 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 rounded-md transition-colors"
         >
-          开始生成
+          {{ $t('common.start') }} {{ $t('common.generate') }}
         </button>
         <button
           v-if="isCompleted && !isFlashing"
           @click="$emit('close')"
           class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
         >
-          关闭
+          {{ $t('common.close') }}
         </button>
       </div>
     </div>
@@ -228,8 +228,11 @@
 
 <script setup>
 import { ref, computed, onMounted, markRaw, h } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AssetsBuilder from '@/utils/AssetsBuilder.js'
 import { useDeviceStatus } from '@/composables/useDeviceStatus'
+
+const { t } = useI18n()
 
 const props = defineProps({
   config: {
@@ -258,15 +261,16 @@ const flashCurrentStep = ref('')
 const flashError = ref('')
 
 
-const progressSteps = ref([
-  { id: 1, name: '初始化生成器', status: 'pending' },
-  { id: 2, name: '处理字体文件', status: 'pending' },
-  { id: 3, name: '打包唤醒词模型', status: 'pending' },
-  { id: 4, name: '处理表情图片', status: 'pending' },
-  { id: 5, name: '处理背景图片', status: 'pending' },
-  { id: 6, name: '生成索引文件', status: 'pending' },
-  { id: 7, name: '构建SPIFFS映射', status: 'pending' },
-  { id: 8, name: '完成打包', status: 'pending' }
+// 使用计算属性来获取翻译后的进度步骤名称
+const progressSteps = computed(() => [
+  { id: 1, name: t('progressSteps.init'), status: 'pending' },
+  { id: 2, name: t('progressSteps.font'), status: 'pending' },
+  { id: 3, name: t('progressSteps.wakeword'), status: 'pending' },
+  { id: 4, name: t('progressSteps.emoji'), status: 'pending' },
+  { id: 5, name: t('progressSteps.background'), status: 'pending' },
+  { id: 6, name: t('progressSteps.index'), status: 'pending' },
+  { id: 7, name: t('progressSteps.spiffs'), status: 'pending' },
+  { id: 8, name: t('progressSteps.package'), status: 'pending' }
 ])
 
 const fileList = ref([])
@@ -344,16 +348,16 @@ const getFontName = () => {
   if (props.config.theme.font.type === 'preset') {
     return props.config.theme.font.preset.replace('font_', '').replace('_', ' ')
   }
-  return '自定义字体'
+  return t('generateModal.customFont')
 }
 
 const getEmojiName = () => {
   if (props.config.theme.emoji.type === 'preset' && props.config.theme.emoji.preset) {
     return props.config.theme.emoji.preset === 'twemoji32' ? 'Twemoji 32×32' : 'Twemoji 64×64'
   } else if (props.config.theme.emoji.type === 'custom') {
-    return '自定义表情包'
+    return t('generateModal.customEmoji')
   }
-  return '未配置'
+  return t('generateModal.notConfigured')
 }
 
 const initializeFileList = () => {
@@ -436,7 +440,7 @@ const initializeFileList = () => {
     
     // 必须使用新的 hash 映射结构
     if (Object.keys(emotionMap).length === 0 || Object.keys(fileMap).length === 0) {
-      console.error('❌ 检测到不兼容的表情数据，请重新配置')
+      console.error(t('errors.incompatibleEmojiData'))
       return
     }
     
@@ -608,7 +612,7 @@ const startGeneration = async () => {
     isCompleted.value = false
     
     // 显示错误
-    alert(`生成失败: ${error.message}`)
+    alert(t('errors.generationFailed', { error: error.message }))
   }
 }
 
@@ -624,7 +628,7 @@ const downloadFile = () => {
     document.body.removeChild(element)
     URL.revokeObjectURL(url)
   } else {
-    console.error('没有可下载的文件')
+    console.error(t('errors.noFileToDownload'))
   }
 }
 
@@ -650,7 +654,7 @@ const checkDeviceOnline = async () => {
 
     deviceOnline.value = response.ok
   } catch (error) {
-    console.error('检查设备状态失败:', error)
+    console.error(t('flashProgress.unableToGetDeviceStatus'), error)
     deviceOnline.value = false
   }
 }
@@ -658,12 +662,12 @@ const checkDeviceOnline = async () => {
 // 开始在线烧录
 const startOnlineFlash = async () => {
   if (!generatedBlob.value) {
-    alert('错误：没有可烧录的文件')
+    alert(t('errors.noFileToDownload'))
     return
   }
 
   if (!deviceOnline.value) {
-    alert('错误：设备不在线，无法进行烧录')
+    alert(t('errors.deviceOffline'))
     return
   }
 
@@ -675,14 +679,14 @@ const startOnlineFlash = async () => {
     if (fileSize > assetsPartitionSize) {
       const fileSizeMB = (fileSize / 1024 / 1024).toFixed(2)
       const partitionSizeMB = (assetsPartitionSize / 1024 / 1024).toFixed(2)
-      alert(`烧录失败：文件大小 ${fileSizeMB}MB 超过 assets 分区大小 ${partitionSizeMB}MB，请减少配置内容或使用更大容量的设备`)
+      alert(t('errors.fileTooLarge', { fileSize: fileSizeMB, partitionSize: partitionSizeMB }))
       return
     }
   }
 
   isFlashing.value = true
   flashProgress.value = 0
-  flashCurrentStep.value = '准备开始烧录...'
+  flashCurrentStep.value = t('flashProgress.startingFileTransfer')
   flashError.value = ''
 
   try {
@@ -696,24 +700,24 @@ const startOnlineFlash = async () => {
       onComplete: () => {
         isFlashing.value = false
         flashProgress.value = 100
-        flashCurrentStep.value = '烧录完成！'
+        flashCurrentStep.value = t('flashProgress.flashCompleted')
       },
       onError: (error) => {
         isFlashing.value = false
         flashError.value = error
-        console.error('烧录失败:', error)
+        console.error(t('flashProgress.onlineFlashFailed', { error }))
       }
     })
   } catch (error) {
     isFlashing.value = false
-    flashError.value = `启动烧录失败: ${error.message}`
-    console.error('启动烧录失败:', error)
+    flashError.value = t('flashProgress.onlineFlashFailed', { error: error.message })
+    console.error(t('flashProgress.onlineFlashFailed', { error }))
   }
 }
 
 // 取消烧录
 const cancelFlash = () => {
-  if (confirm('确定要取消烧录吗？')) {
+  if (confirm(t('errors.flashCancelConfirm'))) {
     isFlashing.value = false
     flashProgress.value = 0
     flashCurrentStep.value = ''
