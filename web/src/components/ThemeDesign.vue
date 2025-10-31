@@ -7,22 +7,22 @@
 
     <!-- Tab Navigation -->
     <div class="border-b border-gray-200">
-      <nav class="-mb-px flex space-x-8">
+      <nav class="-mb-px flex space-x-4 sm:space-x-8">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           @click="handleTabClick(tab.id)"
           :class="[
-            'py-2 px-1 border-b-2 font-medium text-sm',
+            'py-2 px-1 border-b-2 font-medium text-sm relative',
             currentTab === tab.id
               ? 'border-primary-500 text-primary-600'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
           ]"
         >
           <span class="flex items-center">
-            <component :is="tab.icon" class="w-5 h-5 mr-2" />
-            {{ tab.name }}
-            <span v-if="getTabStatus(tab.id)" class="ml-2 w-2 h-2 bg-green-500 rounded-full"></span>
+            <component :is="tab.icon" class="w-5 h-5 sm:mr-2" />
+            <span class="hidden sm:inline">{{ tab.name }}</span>
+            <span v-if="getTabStatus(tab.id)" class="absolute -top-1 -right-1 sm:static sm:ml-2 w-2 h-2 bg-green-500 rounded-full"></span>
           </span>
         </button>
       </nav>
