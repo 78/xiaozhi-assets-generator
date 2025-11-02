@@ -90,7 +90,7 @@
     "notice": "注意:",
     "unsupportedMessage": "{chipModel}チップはウェイクワード機能をサポートしていません。ウェイクワードを使用する必要がある場合は、ESP32-S3、ESP32-P4、またはESP32-C3/C5/C6チップを選択してください。",
     "selectWakeword": "ウェイクワードを選択",
-    "placeholder": "ウェイクワードを選択してください（オプション）",
+    "placeholder": "ウェイクワードなし",
     "tips": {
       "tipLabel": "ヒント:",
       "optional": "ウェイクワードはオプションです。ウェイクワードを設定しない場合、デバイスは音声で起動できません。",
@@ -264,6 +264,8 @@
   "emojiConfig": {
     "title": "絵文字コレクション設定",
     "description": "プリセット絵文字パックを選択するか、カスタム絵文字画像をアップロードします。各絵文字パックには21種類の異なる感情表現が含まれます。",
+    "noEmojiPack": "絵文字パックなし",
+    "noEmojiPackDescription": "絵文字パックを設定せず、パッケージにはフォントと背景リソースのみを含めます。",
     "presetEmojiPack": "プリセット絵文字パック",
     "customEmojiPack": "カスタム絵文字パック",
     "selectPresetEmojiPack": "プリセット絵文字パックを選択",
@@ -327,6 +329,8 @@
   "fontConfig": {
     "title": "フォント設定",
     "description": "プリセットフォントを選択するか、カスタムフォントファイルをアップロードします。",
+    "noFonts": "フォントなし",
+    "noFontsDescription": "フォント設定を使用しない、デバイスはデフォルトのフォントを使用します",
     "presetFonts": "プリセットフォント",
     "customFonts": "カスタムフォント",
     "selectPresetFont": "プリセットフォントを選択",

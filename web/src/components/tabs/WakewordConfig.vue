@@ -19,8 +19,8 @@
     <!-- 不支持唤醒词的提示 -->
     <div v-if="!supportWakeNet9 && !supportWakeNet9s" class="bg-orange-50 border border-orange-200 rounded-lg p-4">
       <div class="text-sm text-orange-800">
-        <strong>{{ $t('wakewordConfig.notice') }}：</strong>
-        <p class="mt-1">{{ $t('wakewordConfig.unsupportedMessage', { chipModel: chipModel }) }}</p>
+        <strong>{{ $t('wakewordConfig.notice') }}</strong>
+        <p class="mt-1">{{ $t('wakewordConfig.unsupportedMessage', { chipModel }) }}</p>
       </div>
     </div>
 

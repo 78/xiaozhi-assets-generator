@@ -247,6 +247,8 @@
   "emojiConfig": {
     "title": "表情集合配置",
     "description": "选择预设表情包或自定义表情图片。每个表情包包含21种不同情绪的表情。",
+    "noEmojiPack": "无表情包",
+    "noEmojiPackDescription": "不配置表情包，打包时只包含字体和背景资源。",
     "presetEmojiPack": "预设表情包",
     "customEmojiPack": "自定义表情包",
     "selectPresetEmojiPack": "选择预设表情包",
@@ -310,6 +312,8 @@
   "fontConfig": {
     "title": "字体配置",
     "description": "选择预设字体或上传自定义字体文件。",
+    "noFonts": "无字体",
+    "noFontsDescription": "不使用字体配置，设备将使用默认字体",
     "presetFonts": "预设字体",
     "customFonts": "自定义字体",
     "selectPresetFont": "选择预设字体",
@@ -352,7 +356,7 @@
     "notice": "注意：",
     "unsupportedMessage": "{chipModel} 芯片不支持唤醒词功能。如需使用唤醒词，请选择 ESP32-S3、ESP32-P4 或 ESP32-C3/C5/C6 芯片。",
     "selectWakeword": "选择唤醒词",
-    "placeholder": "请选择唤醒词（可选）",
+    "placeholder": "无唤醒词",
     "tips": {
       "tipLabel": "提示：",
       "optional": "唤醒词是可选的，不配置唤醒词时设备将无法语音唤醒。",

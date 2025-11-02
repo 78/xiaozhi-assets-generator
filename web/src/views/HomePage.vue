@@ -142,8 +142,8 @@ const config = ref({
   theme: {
     wakeword: '',
     font: {
-      type: 'preset',
-      preset: 'font_puhui_deepseek_20_4',
+      type: 'none',
+      preset: '',
       custom: {
         file: null,
         size: 20,
@@ -152,7 +152,7 @@ const config = ref({
       }
     },
     emoji: {
-      type: '',
+      type: 'none',
       preset: '',
       custom: {
         size: { width: 160, height: 120 },
@@ -178,7 +178,7 @@ const config = ref({
 
 const canGenerate = computed(() => {
   return config.value.chip.model && 
-         (config.value.theme.font.preset || config.value.theme.font.custom.file)
+         (config.value.theme.font.type === 'none' || config.value.theme.font.preset || config.value.theme.font.custom.file)
 })
 
 const getStepClass = (index) => {
@@ -504,21 +504,20 @@ const confirmReset = async () => {
     // 清理 AssetsBuilder 的存储数据
     await assetsBuilder.clearAllStoredData()
     
-    // 重置配置到默认值
+    // 保存当前的芯片配置
+    const currentChipConfig = {
+      model: config.value.chip.model,
+      display: { ...config.value.chip.display }
+    }
+    
+    // 重置配置到默认值，但保留芯片配置
     config.value = {
-      chip: {
-        model: '',
-        display: {
-          width: 320,
-          height: 240,
-          color: 'RGB565'
-        }
-      },
+      chip: currentChipConfig,
       theme: {
         wakeword: '',
         font: {
-          type: 'preset',
-          preset: 'font_puhui_deepseek_20_4',
+          type: 'none',
+          preset: '',
           custom: {
             file: null,
             size: 20,
@@ -527,7 +526,7 @@ const confirmReset = async () => {
           }
         },
         emoji: {
-          type: '',
+          type: 'none',
           preset: '',
           custom: {
             size: { width: 64, height: 64 },
@@ -559,7 +558,7 @@ const confirmReset = async () => {
     
   } catch (error) {
     console.error('重置配置失败:', error)
-    alert('重置失败，请刷新页面重试')
+    alert(t('errors.resetFailed'))
   } finally {
     isResetting.value = false
   }

@@ -52,8 +52,8 @@
                         class="emoji-placeholder flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 rounded bg-gray-50"
                       >
                         <div class="text-center">
-                          <div class="text-sm">😕</div>
-                          <div class="text-xs">{{ $t('generateSummary.noEmotionConfigured') }}</div>
+                          <div class="text-sm">{{ config.theme.emoji.type === 'none' ? '📦' : '😕' }}</div>
+                          <div class="text-xs">{{ config.theme.emoji.type === 'none' ? $t('emojiConfig.noEmojiPack') : $t('generateSummary.noEmotionConfigured') }}</div>
                         </div>
                       </div>
                     </div>
@@ -130,8 +130,8 @@
               </button>
             </div>
             <div v-else class="text-center py-4 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed">
-              <div class="text-2xl mb-2">😕</div>
-              <div class="text-sm">{{ $t('generateSummary.configureEmojiFirst') }}</div>
+              <div class="text-2xl mb-2">{{ config.theme.emoji.type === 'none' ? '📦' : '😕' }}</div>
+              <div class="text-sm">{{ config.theme.emoji.type === 'none' ? $t('emojiConfig.noEmojiPackDescription') : $t('generateSummary.configureEmojiFirst') }}</div>
             </div>
           </div>
 
@@ -173,7 +173,6 @@
               <div class="flex items-center">
                 <span>{{ $t('generateSummary.font') }} {{ getFontName() }}</span>
                 <span v-if="!fontLoaded" class="ml-2 animate-pulse text-blue-500">{{ $t('generateSummary.loading') }}</span>
-                <span v-else class="ml-2 text-green-500">✓</span>
               </div>
               <div>{{ $t('generateSummary.emotion') }} {{ getEmojiName() }}</div>
               <div>{{ $t('generateSummary.skin') }} {{ getSkinName() }}</div>
@@ -509,6 +508,8 @@ const getEmojiName = () => {
   } else if (props.config.theme.emoji.type === 'custom') {
     const count = Object.keys(props.config.theme.emoji.custom.images).length
     return t('generateSummary.customEmoji', { count })
+  } else if (props.config.theme.emoji.type === 'none') {
+    return t('emojiConfig.noEmojiPack')
   } else {
     return t('generateSummary.notConfigured')
   }

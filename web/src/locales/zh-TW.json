@@ -90,7 +90,7 @@
     "notice": "注意：",
     "unsupportedMessage": "{chipModel} 晶片不支援喚醒詞功能。如需使用喚醒詞，請選擇 ESP32-S3、ESP32-P4 或 ESP32-C3/C5/C6 晶片。",
     "selectWakeword": "選擇喚醒詞",
-    "placeholder": "請選擇喚醒詞（可選）",
+    "placeholder": "無喚醒詞",
     "tips": {
       "tipLabel": "提示：",
       "optional": "喚醒詞是可選的，不配置喚醒詞時設備將無法語音喚醒。",
@@ -264,6 +264,8 @@
   "emojiConfig": {
     "title": "表情集合配置",
     "description": "選擇預設表情包或自定義表情圖片。每個表情包包含21種不同情緒的表情。",
+    "noEmojiPack": "無表情包",
+    "noEmojiPackDescription": "不配置表情包，打包時只包含字體和背景資源。",
     "presetEmojiPack": "預設表情包",
     "customEmojiPack": "自定義表情包",
     "selectPresetEmojiPack": "選擇預設表情包",
@@ -327,6 +329,8 @@
   "fontConfig": {
     "title": "字體配置",
     "description": "選擇預設字體或上傳自訂字體檔案。",
+    "noFonts": "無字體",
+    "noFontsDescription": "不使用字體配置，裝置將使用預設字體",
     "presetFonts": "預設字體",
     "customFonts": "自訂字體",
     "selectPresetFont": "選擇預設字體",

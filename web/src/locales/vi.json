@@ -90,7 +90,7 @@
     "notice": "Lưu ý:",
     "unsupportedMessage": "Chip {chipModel} không hỗ trợ chức năng từ đánh thức. Nếu bạn cần sử dụng từ đánh thức, vui lòng chọn chip ESP32-S3, ESP32-P4 hoặc ESP32-C3/C5/C6.",
     "selectWakeword": "Chọn từ đánh thức",
-    "placeholder": "Vui lòng chọn từ đánh thức (tùy chọn)",
+    "placeholder": "Không có từ đánh thức",
     "tips": {
       "tipLabel": "Mẹo:",
       "optional": "Từ đánh thức là tùy chọn. Nếu không cấu hình từ đánh thức, thiết bị sẽ không thể đánh thức bằng giọng nói.",
@@ -264,6 +264,8 @@
   "emojiConfig": {
     "title": "Cấu hình bộ sưu tập biểu tượng cảm xúc",
     "description": "Chọn gói biểu tượng cảm xúc đặt sẵn hoặc hình ảnh biểu tượng cảm xúc tùy chỉnh. Mỗi gói biểu tượng cảm xúc chứa 21 biểu cảm cảm xúc khác nhau.",
+    "noEmojiPack": "Không có gói biểu tượng cảm xúc",
+    "noEmojiPackDescription": "Không cấu hình gói biểu tượng cảm xúc, chỉ bao gồm phông chữ và tài nguyên nền trong gói.",
     "presetEmojiPack": "Gói biểu tượng cảm xúc đặt sẵn",
     "customEmojiPack": "Gói biểu tượng cảm xúc tùy chỉnh",
     "selectPresetEmojiPack": "Chọn gói biểu tượng cảm xúc đặt sẵn",
@@ -327,6 +329,8 @@
   "fontConfig": {
     "title": "Cấu hình phông chữ",
     "description": "Chọn phông chữ đặt sẵn hoặc tải lên tệp phông chữ tùy chỉnh.",
+    "noFonts": "Không có phông chữ",
+    "noFontsDescription": "Không sử dụng cấu hình phông chữ, thiết bị sẽ sử dụng phông chữ mặc định",
     "presetFonts": "Phông chữ đặt sẵn",
     "customFonts": "Phông chữ tùy chỉnh",
     "selectPresetFont": "Chọn phông chữ đặt sẵn",

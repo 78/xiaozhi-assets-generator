@@ -9,6 +9,17 @@
     <div class="space-y-4">
       <div class="flex space-x-4">
         <button
+          @click="setFontType('none')"
+          :class="[
+            'px-4 py-2 border rounded-lg transition-colors',
+            modelValue.type === 'none'
+              ? 'border-primary-500 bg-primary-50 text-primary-700'
+              : 'border-gray-300 hover:border-gray-400'
+          ]"
+        >
+          {{ $t('fontConfig.noFonts') }}
+        </button>
+        <button
           @click="setFontType('preset')"
           :class="[
             'px-4 py-2 border rounded-lg transition-colors',
@@ -30,6 +41,15 @@
         >
           {{ $t('fontConfig.customFonts') }}
         </button>
+      </div>
+    </div>
+
+    <div v-if="modelValue.type === 'none'" class="space-y-4">
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+        <p class="mt-2 text-gray-600">{{ $t('fontConfig.noFontsDescription') }}</p>
       </div>
     </div>
 

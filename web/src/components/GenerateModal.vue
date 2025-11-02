@@ -356,6 +356,8 @@ const getEmojiName = () => {
     return props.config.theme.emoji.preset === 'twemoji32' ? 'Twemoji 32×32' : 'Twemoji 64×64'
   } else if (props.config.theme.emoji.type === 'custom') {
     return t('generateModal.customEmoji')
+  } else if (props.config.theme.emoji.type === 'none') {
+    return t('emojiConfig.noEmojiPack')
   }
   return t('generateModal.notConfigured')
 }

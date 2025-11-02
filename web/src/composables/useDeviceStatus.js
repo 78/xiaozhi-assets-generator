@@ -30,7 +30,7 @@ const getUrlParameter = (name) => {
 // 调用MCP工具
 const callMcpTool = async (toolName, params = {}) => {
   if (!token.value) {
-    throw new Error('未找到认证令牌')
+    throw new Error('Authentication token not found')
   }
 
   const response = await fetch('/api/messaging/device/tools/call', {
@@ -50,10 +50,10 @@ const callMcpTool = async (toolName, params = {}) => {
     return result
   } else {
     const errorText = await response.text()
-    console.error(`MCP工具 ${toolName} 失败:`, response.status, errorText)
+    console.error(`MCP tool ${toolName} failed:`, response.status, errorText)
     
     // 解析错误信息
-    let errorMessage = `调用${toolName}失败`
+    let errorMessage = `Failed to call ${toolName}`
     try {
       const errorData = JSON.parse(errorText)
       if (errorData.message) {
@@ -82,16 +82,16 @@ const fetchDeviceInfo = async () => {
     if (systemInfoResponse.status === 'fulfilled' && systemInfoResponse.value) {
       const data = systemInfoResponse.value.data || systemInfoResponse.value
 
-      deviceInfo.value.chip = { model: data.chip_model_name || '未知' }
-      deviceInfo.value.board = { model: data.board?.name || '未知' }
-      deviceInfo.value.firmware = { version: data.application?.version || '未知' }
+      deviceInfo.value.chip = { model: data.chip_model_name || 'Unknown' }
+      deviceInfo.value.board = { model: data.board?.name || 'Unknown' }
+      deviceInfo.value.firmware = { version: data.application?.version || 'Unknown' }
 
       // 获取Flash大小
       if (data.flash_size) {
         const sizeInMB = Math.round(data.flash_size / 1024 / 1024)
         deviceInfo.value.flash = { size: `${sizeInMB}MB` }
       } else {
-        deviceInfo.value.flash = { size: '未知' }
+        deviceInfo.value.flash = { size: 'Unknown' }
       }
 
       // 获取assets分区大小
@@ -110,10 +110,10 @@ const fetchDeviceInfo = async () => {
       }
     } else {
       console.warn('系统信息获取失败:', systemInfoResponse.reason || systemInfoResponse.value)
-      deviceInfo.value.chip = { model: '未知' }
-      deviceInfo.value.board = { model: '未知' }
-      deviceInfo.value.firmware = { version: '未知' }
-      deviceInfo.value.flash = { size: '未知' }
+      deviceInfo.value.chip = { model: 'Unknown' }
+      deviceInfo.value.board = { model: 'Unknown' }
+      deviceInfo.value.firmware = { version: 'Unknown' }
+      deviceInfo.value.flash = { size: 'Unknown' }
       deviceInfo.value.assetsPartition = null
     }
 
@@ -123,11 +123,11 @@ const fetchDeviceInfo = async () => {
 
       deviceInfo.value.network = {
         type: data.network?.type || 'unknown',
-        signal: data.network?.signal || '未知'
+        signal: data.network?.signal || 'Unknown'
       }
     } else {
       console.warn('设备状态获取失败:', deviceStateResponse.reason || deviceStateResponse.value)
-      deviceInfo.value.network = { type: 'unknown', signal: '未知' }
+      deviceInfo.value.network = { type: 'unknown', signal: 'Unknown' }
     }
 
     // 处理屏幕信息
@@ -139,7 +139,7 @@ const fetchDeviceInfo = async () => {
       }
     } else {
       console.warn('屏幕信息获取失败:', screenInfoResponse.reason || screenInfoResponse.value)
-      deviceInfo.value.screen = { resolution: '未知' }
+      deviceInfo.value.screen = { resolution: 'Unknown' }
     }
   } catch (error) {
     console.error('获取设备信息时发生错误:', error)

@@ -22,7 +22,6 @@
           <span class="flex items-center">
             <component :is="tab.icon" class="w-5 h-5 sm:mr-2" />
             <span class="hidden sm:inline">{{ tab.name }}</span>
-            <span v-if="getTabStatus(tab.id)" class="absolute -top-1 -right-1 sm:static sm:ml-2 w-2 h-2 bg-green-500 rounded-full"></span>
           </span>
         </button>
       </nav>
@@ -62,8 +61,7 @@
       </button>
       <button 
         @click="handleNext"
-        :disabled="!canProceed"
-        class="bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+        class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
       >
         {{ $t('themeDesign.next') }}
       </button>
@@ -176,31 +174,8 @@ const localValue = computed({
   set: (value) => emit('update:modelValue', value)
 })
 
-const getTabStatus = (tabId) => {
-  switch (tabId) {
-    case 'wakeword':
-      return !!localValue.value.wakeword
-    case 'font':
-      return localValue.value.font.preset || localValue.value.font.custom.file
-    case 'emoji':
-      return localValue.value.emoji.preset || Object.keys(localValue.value.emoji.custom.images).length > 0
-    case 'background':
-      return true // 背景默认已配置
-    default:
-      return false
-  }
-}
-
-const canProceed = computed(() => {
-  const hasFont = localValue.value.font.preset || localValue.value.font.custom.file
-  const hasEmoji = localValue.value.emoji.preset || Object.keys(localValue.value.emoji.custom.images).length > 0
-  return hasFont && hasEmoji
-})
-
 const handleNext = () => {
-  if (canProceed.value) {
-    emit('next')
-  }
+  emit('next')
 }
 
 const handleTabClick = (tabId) => {

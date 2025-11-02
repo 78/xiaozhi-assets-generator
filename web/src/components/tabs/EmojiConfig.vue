@@ -7,7 +7,18 @@
 
     <!-- 表情类型选择 -->
     <div class="space-y-4">
-      <div class="flex space-x-4">
+      <div class="flex flex-wrap gap-3">
+        <button
+          @click="setEmojiType('none')"
+          :class="[
+            'px-4 py-2 border rounded-lg transition-colors',
+            modelValue.type === 'none'
+              ? 'border-primary-500 bg-primary-50 text-primary-700'
+              : 'border-gray-300 hover:border-gray-400'
+          ]"
+        >
+          {{ $t('emojiConfig.noEmojiPack') }}
+        </button>
         <button
           @click="setEmojiType('preset')"
           :class="[
@@ -31,6 +42,9 @@
           {{ $t('emojiConfig.customEmojiPack') }}
         </button>
       </div>
+      <p v-if="modelValue.type === 'none'" class="text-sm text-gray-500">
+        {{ $t('emojiConfig.noEmojiPackDescription') }}
+      </p>
     </div>
 
     <div v-if="modelValue.type === 'preset'" class="space-y-4">
@@ -270,7 +284,14 @@ const setEmojiType = (type) => {
   
   const newValue = { ...props.modelValue, type }
   
-  if (type === 'preset') {
+  if (type === 'none') {
+    // 选择无表情包
+    newValue.preset = ''
+    newValue.custom = {
+      ...props.modelValue.custom,
+      images: props.modelValue.custom.images || {}
+    }
+  } else if (type === 'preset') {
     // 切换到预设表情时，保留自定义表情数据
     newValue.preset = props.modelValue.preset || 'twemoji32'
     newValue.custom = {
