@@ -356,7 +356,7 @@
     "gb2312": "GB2312 (7445 characters)",
     "qwen18409": "Qwen (18409 characters)",
     "latin1": "Latin1 (190 characters)",
-    "recommendedDeepseek": "Recommended: DeepSeek R1",
+    "fullCharset": "Full Character Set (All characters in font file)",
     "selectValidFontFile": "Please select a valid font file (TTF, WOFF, WOFF2)",
     "presetFontNames": {
       "font_puhui_deepseek_14_1": "Alibaba PuHuiTi 14px",

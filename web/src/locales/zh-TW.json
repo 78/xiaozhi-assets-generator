@@ -356,7 +356,7 @@
     "gb2312": "GB2312 (7445字元)",
     "qwen18409": "Qwen (18409字元)",
     "latin1": "Latin1 (190字元)",
-    "recommendedDeepseek": "建議使用 DeepSeek R1",
+    "fullCharset": "完整字元集 (字體檔案的所有字元)",
     "selectValidFontFile": "請選擇有效的字體檔案 (TTF, WOFF, WOFF2)",
     "presetFontNames": {
       "font_puhui_deepseek_14_1": "阿里巴巴普惠體 14px",

@@ -205,6 +205,13 @@ class BrowserFontConverter {
     let ranges = []
     let charSymbols = symbols || ''
 
+    // 处理完整字符集 - 使用 Unicode 范围 0x0-0xFFFF
+    if (charset === 'full') {
+      ranges = [0x0, 0xFFFF, 0x0]
+      // 完整字符集不需要额外的符号
+      return { ranges, charSymbols }
+    }
+
     // 处理预设字符集
     if (charset && charset !== 'custom') {
       const presetChars = await this.getCharsetContentAsync(charset)
@@ -225,6 +232,13 @@ class BrowserFontConverter {
   parseCharacterInput(charset, symbols, range) {
     let ranges = []
     let charSymbols = symbols || ''
+
+    // 处理完整字符集 - 使用 Unicode 范围 0x0-0xFFFF
+    if (charset === 'full') {
+      ranges = [0x0, 0xFFFF, 0x0]
+      // 完整字符集不需要额外的符号
+      return { ranges, charSymbols }
+    }
 
     // 处理预设字符集
     if (charset && charset !== 'custom') {
@@ -376,7 +390,10 @@ class BrowserFontConverter {
     // 计算字符数量
     let charCount = symbols.length
     
-    if (charset && charset !== 'custom') {
+    // 处理完整字符集 - 包含 0x0-0xFFFF (65536 个字符)
+    if (charset === 'full') {
+      charCount = 65536
+    } else if (charset && charset !== 'custom') {
       const charsetContent = await this.getCharsetContentAsync(charset)
       charCount += charsetContent.length
     }
@@ -388,8 +405,10 @@ class BrowserFontConverter {
       }
     }
     
-    // 去重字符数（粗略估算）
-    charCount = Math.min(charCount, charCount * 0.8)
+    // 去重字符数（粗略估算），但完整字符集不去重
+    if (charset !== 'full') {
+      charCount = Math.min(charCount, charCount * 0.8)
+    }
     
     // 估算每个字符的字节数
     const avgBytesPerChar = Math.ceil((fontSize * fontSize * bpp) / 8) + 40
@@ -413,7 +432,10 @@ class BrowserFontConverter {
     // 计算字符数量
     let charCount = symbols.length
     
-    if (charset && charset !== 'custom') {
+    // 处理完整字符集 - 包含 0x0-0xFFFF (65536 个字符)
+    if (charset === 'full') {
+      charCount = 65536
+    } else if (charset && charset !== 'custom') {
       const charsetContent = this.getCharsetContent(charset)
       charCount += charsetContent.length
     }
@@ -425,8 +447,10 @@ class BrowserFontConverter {
       }
     }
     
-    // 去重字符数（粗略估算）
-    charCount = Math.min(charCount, charCount * 0.8)
+    // 去重字符数（粗略估算），但完整字符集不去重
+    if (charset !== 'full') {
+      charCount = Math.min(charCount, charCount * 0.8)
+    }
     
     // 估算每个字符的字节数
     const avgBytesPerChar = Math.ceil((fontSize * fontSize * bpp) / 8) + 40

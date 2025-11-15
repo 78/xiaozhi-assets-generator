@@ -177,8 +177,8 @@
             <option value="deepseek">{{ $t('fontConfig.deepseekR1') }}</option>
             <option value="gb2312">{{ $t('fontConfig.gb2312') }}</option>
             <option value="latin">{{ $t('fontConfig.latin1') }}</option>
+            <option value="full">{{ $t('fontConfig.fullCharset') }}</option>
           </select>
-          <p class="text-xs text-gray-500 mt-1">{{ $t('fontConfig.recommendedDeepseek') }}</p>
         </div>
       </div>
 

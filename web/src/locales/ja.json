@@ -356,7 +356,7 @@
     "gb2312": "GB2312（7445文字）",
     "qwen18409": "Qwen（18409文字）",
     "latin1": "Latin1（190文字）",
-    "recommendedDeepseek": "推奨: DeepSeek R1",
+    "fullCharset": "完全な文字セット（フォントファイルのすべての文字）",
     "selectValidFontFile": "有効なフォントファイルを選択してください（TTF、WOFF、WOFF2）",
     "presetFontNames": {
       "font_puhui_deepseek_14_1": "Alibaba PuHuiTi 14px",
