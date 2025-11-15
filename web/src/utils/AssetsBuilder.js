@@ -166,14 +166,15 @@ class AssetsBuilder {
 
     const restoredFiles = []
 
-    // 恢复自定义字体文件
-    if (config.theme?.font?.type === 'custom' && config.theme.font.custom?.file === null) {
+    // 恢复自定义字体文件（无论当前字体类型是什么，都尝试恢复）
+    if (config.theme?.font?.custom && config.theme.font.custom?.file === null) {
       const fontKey = 'custom_font'
       if (await this.restoreResourceFromStorage(fontKey)) {
         const resource = this.resources.get(fontKey)
         if (resource) {
           config.theme.font.custom.file = resource.file
           restoredFiles.push(`Custom font: ${resource.filename}`)
+          console.log(`Custom font restored even when type is '${config.theme.font.type}'`)
         }
       }
     }

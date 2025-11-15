@@ -352,8 +352,18 @@ const loadFont = async () => {
   try {
     if (props.config.theme.font.type === 'preset') {
       // 加载预设字体
-      const fontFamily = 'PuHuiPreview'
-      const fontUrl = './static/fonts/puhui_deepseek.ttf'
+      const presetId = props.config.theme.font.preset
+      let fontFamily, fontUrl
+      
+      // 根据预设字体 ID 判断是 puhui 还是 noto
+      if (presetId && presetId.startsWith('font_noto_qwen_')) {
+        fontFamily = 'NotoPreview'
+        fontUrl = './static/fonts/noto_qwen.ttf'
+      } else {
+        // 默认为 puhui
+        fontFamily = 'PuHuiPreview'
+        fontUrl = './static/fonts/puhui_deepseek.ttf'
+      }
       
       const style = document.createElement('style')
       style.setAttribute('data-font-preview', 'true')
@@ -489,13 +499,8 @@ const getWakewordName = () => {
 
 const getFontName = () => {
   if (props.config.theme.font.type === 'preset') {
-    const presetNames = {
-      'font_puhui_deepseek_14_1': '普惠体 14px',
-      'font_puhui_deepseek_16_4': '普惠体 16px',
-      'font_puhui_deepseek_20_4': '普惠体 20px',
-      'font_puhui_deepseek_30_4': '普惠体 30px'
-    }
-    return presetNames[props.config.theme.font.preset] || props.config.theme.font.preset
+    // 使用国际化翻译获取预设字体名称
+    return t('fontConfig.presetFontNames.' + props.config.theme.font.preset) || props.config.theme.font.preset
   } else {
     const custom = props.config.theme.font.custom
     return t('generateSummary.customFont', { size: custom.size })

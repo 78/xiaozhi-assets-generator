@@ -248,7 +248,8 @@ class BrowserFontConverter {
     const charsetFiles = {
       latin: './static/charsets/latin1.txt',
       deepseek: './static/charsets/deepseek.txt',
-      gb2312: './static/charsets/gb2312.txt'
+      gb2312: './static/charsets/gb2312.txt',
+      qwen: './static/charsets/qwen18409.txt'
     }
     
     const filePath = charsetFiles[charset]
@@ -310,7 +311,7 @@ class BrowserFontConverter {
     }
     
     // 对于需要从文件加载的字符集
-    if (charset === 'latin' || charset === 'deepseek' || charset === 'gb2312') {
+    if (charset === 'latin' || charset === 'deepseek' || charset === 'gb2312' || charset === 'qwen') {
       const loadedCharset = await this.loadCharsetFromFile(charset)
       if (loadedCharset) {
         return loadedCharset

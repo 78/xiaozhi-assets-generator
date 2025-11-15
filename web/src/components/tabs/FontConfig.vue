@@ -55,7 +55,7 @@
 
     <div v-if="modelValue.type === 'preset'" class="space-y-4">
       <h4 class="font-medium text-gray-900">{{ $t('fontConfig.presetFonts') }}</h4>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div
           v-for="font in presetFonts"
           :key="font.id"
@@ -173,6 +173,7 @@
             v-model="localCustom.charset"
             class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
+            <option value="qwen">{{ $t('fontConfig.qwen18409') }}</option>
             <option value="deepseek">{{ $t('fontConfig.deepseekR1') }}</option>
             <option value="gb2312">{{ $t('fontConfig.gb2312') }}</option>
             <option value="latin">{{ $t('fontConfig.latin1') }}</option>
@@ -228,21 +229,55 @@ const presetFontsBase = [
     size: 30,
     bpp: 4,
     fileSize: '~2.5MB'
+  },
+  {
+    id: 'font_noto_qwen_14_1',
+    size: 14,
+    bpp: 1,
+    fileSize: '~626KB'
+  },
+  {
+    id: 'font_noto_qwen_16_4',
+    size: 16,
+    bpp: 4,
+    fileSize: '~2.0MB'
+  },
+  {
+    id: 'font_noto_qwen_20_4',
+    size: 20,
+    bpp: 4,
+    fileSize: '~2.9MB'
+  },
+  {
+    id: 'font_noto_qwen_30_4',
+    size: 30,
+    bpp: 4,
+    fileSize: '~5.8MB'
   }
 ]
 
 const presetFonts = computed(() => {
-  return presetFontsBase.map(font => ({
-    ...font,
-    name: t('fontConfig.presetFontNames.' + font.id),
-    charset: t('fontConfig.commonCharset')
-  }))
+  return presetFontsBase.map(font => {
+    // 根据字体ID判断字符集
+    let charsetText
+    if (font.id.startsWith('font_puhui_deepseek_')) {
+      charsetText = t('fontConfig.charsetDeepseek')
+    } else if (font.id.startsWith('font_noto_qwen_')) {
+      charsetText = t('fontConfig.charsetQwen')
+    }
+    
+    return {
+      ...font,
+      name: t('fontConfig.presetFontNames.' + font.id),
+      charset: charsetText
+    }
+  })
 })
 
 const localCustom = ref({
   size: 20,
   bpp: 4,
-  charset: 'deepseek'
+  charset: 'qwen'
 })
 
 

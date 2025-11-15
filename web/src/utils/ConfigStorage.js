@@ -112,9 +112,9 @@ class ConfigStorage {
     const cloned = JSON.parse(JSON.stringify(config || {}))
 
     try {
-      // 字体文件
-      if (cloned?.theme?.font?.type === 'custom') {
-        if (!cloned.theme.font.custom) cloned.theme.font.custom = {}
+      // 字体文件（始终保留 custom 配置，即使当前选择的是预设字体）
+      if (cloned?.theme?.font?.custom) {
+        // 保留 custom 配置，但将 file 设为 null
         cloned.theme.font.custom.file = null
       }
 

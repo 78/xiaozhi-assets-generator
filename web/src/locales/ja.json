@@ -302,6 +302,7 @@
     "fileDeleted": "ファイル{fileHash}が削除されました（他の感情参照なし）",
     "fileRetained": "ファイル{fileHash}は他の感情でまだ使用されているため、保持されます",
     "imageLoadFailed": "絵文字画像の読み込みに失敗しました",
+    "shareEmojiPackTip": "💡 ヒント：作成した絵文字パックが人気で、無料で皆と共有したい場合は、terrence&#64;tenclass.com まで投稿してください",
     "emotions": {
       "neutral": "中立",
       "happy": "幸せ",
@@ -353,6 +354,7 @@
     "characterSet": "文字セット",
     "deepseekR1": "DeepSeek R1（7405文字）",
     "gb2312": "GB2312（7445文字）",
+    "qwen18409": "Qwen（18409文字）",
     "latin1": "Latin1（190文字）",
     "recommendedDeepseek": "推奨: DeepSeek R1",
     "selectValidFontFile": "有効なフォントファイルを選択してください（TTF、WOFF、WOFF2）",
@@ -360,8 +362,13 @@
       "font_puhui_deepseek_14_1": "Alibaba PuHuiTi 14px",
       "font_puhui_deepseek_16_4": "Alibaba PuHuiTi 16px",
       "font_puhui_deepseek_20_4": "Alibaba PuHuiTi 20px",
-      "font_puhui_deepseek_30_4": "Alibaba PuHuiTi 30px"
+      "font_puhui_deepseek_30_4": "Alibaba PuHuiTi 30px",
+      "font_noto_qwen_14_1": "Noto Sans 14px",
+      "font_noto_qwen_16_4": "Noto Sans 16px",
+      "font_noto_qwen_20_4": "Noto Sans 20px",
+      "font_noto_qwen_30_4": "Noto Sans 30px"
     },
-    "commonCharset": "一般的な文字7000"
+    "charsetDeepseek": "DeepSeek 7405",
+    "charsetQwen": "Qwen 18409"
   }
 }
