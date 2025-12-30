@@ -198,11 +198,6 @@
         <div class="text-xs text-gray-500 mt-2">
           {{ $t('emojiConfig.neutralRequiredNotice') }}
         </div>
-        
-        <!-- 分享提示 -->
-        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p class="text-sm text-blue-800" v-html="$t('emojiConfig.shareEmojiPackTip')"></p>
-        </div>
       </div>
     </div>
   </div>

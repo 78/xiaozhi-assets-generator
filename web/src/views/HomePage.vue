@@ -144,6 +144,7 @@ const config = ref({
     font: {
       type: 'none',
       preset: '',
+      hide_subtitle: false,
       custom: {
         file: null,
         size: 20,
@@ -518,6 +519,7 @@ const confirmReset = async () => {
         font: {
           type: 'none',
           preset: '',
+          hide_subtitle: false,
           custom: {
             file: null,
             size: 20,

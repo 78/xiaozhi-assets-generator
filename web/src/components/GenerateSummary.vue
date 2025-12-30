@@ -61,6 +61,7 @@
                   
                   <!-- 文字显示 -->
                   <div 
+                    v-if="!config.theme.font.hide_subtitle"
                     :style="getTextStyle()"
                     class="text-message max-w-full break-words relative"
                   >
@@ -176,6 +177,7 @@
               </div>
               <div>{{ $t('generateSummary.emotion') }} {{ getEmojiName() }}</div>
               <div>{{ $t('generateSummary.skin') }} {{ getSkinName() }}</div>
+              <div v-if="config.theme.font.hide_subtitle">{{ $t('generateSummary.hideSubtitle') }} {{ $t('common.yes') }}</div>
             </div>
           </div>
         </div>

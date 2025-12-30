@@ -498,6 +498,7 @@ class AssetsBuilder {
     const indexData = {
       version: 1,
       chip_model: this.config.chip.model,
+      hide_subtitle: this.config.theme.font.hide_subtitle || false,
       display_config: {
         width: this.config.chip.display.width,
         height: this.config.chip.display.height,

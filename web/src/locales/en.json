@@ -234,6 +234,7 @@
     "notConfigured": "Not configured",
     "skinLight": "Light {type}",
     "skinDark": "Dark {type}",
+    "hideSubtitle": "Hide Subtitle:",
     "image": "Image",
     "color": "Color"
   },
@@ -302,7 +303,6 @@
     "fileDeleted": "File {fileHash} has been deleted (no other emotion references)",
     "fileRetained": "File {fileHash} is still used by other emotions, retained",
     "imageLoadFailed": "Failed to load emoji image",
-    "shareEmojiPackTip": "💡 Tip: If your emoji pack is popular and you'd like to share it with everyone for free, please submit it to terrence&#64;tenclass.com",
     "emotions": {
       "neutral": "Neutral",
       "happy": "Happy",
@@ -357,6 +357,8 @@
     "qwen18409": "Qwen (18409 characters)",
     "latin1": "Latin1 (190 characters)",
     "fullCharset": "Full Character Set (All characters in font file)",
+    "hideSubtitle": "Hide Subtitle",
+    "hideSubtitleDescription": "Do not show real-time text subtitles during conversation",
     "selectValidFontFile": "Please select a valid font file (TTF, WOFF, WOFF2)",
     "presetFontNames": {
       "font_puhui_deepseek_14_1": "Alibaba PuHuiTi 14px",

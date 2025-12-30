@@ -234,6 +234,7 @@
     "notConfigured": "未配置",
     "skinLight": "淺色{type}",
     "skinDark": "深色{type}",
+    "hideSubtitle": "隱藏字幕:",
     "image": "圖片",
     "color": "顏色"
   },
@@ -302,7 +303,6 @@
     "fileDeleted": "檔案 {fileHash} 已刪除（無其他表情引用）",
     "fileRetained": "檔案 {fileHash} 仍被其他表情使用，保留檔案",
     "imageLoadFailed": "表情圖片載入失敗",
-    "shareEmojiPackTip": "💡 提示：如果您製作的表情包很受歡迎，並且希望分享給所有人免費使用，歡迎投稿至 terrence&#64;tenclass.com",
     "emotions": {
       "neutral": "預設",
       "happy": "開心",
@@ -357,6 +357,8 @@
     "qwen18409": "Qwen (18409字元)",
     "latin1": "Latin1 (190字元)",
     "fullCharset": "完整字元集 (字體檔案的所有字元)",
+    "hideSubtitle": "隱藏字幕",
+    "hideSubtitleDescription": "對話時不顯示即時文字字幕",
     "selectValidFontFile": "請選擇有效的字體檔案 (TTF, WOFF, WOFF2)",
     "presetFontNames": {
       "font_puhui_deepseek_14_1": "阿里巴巴普惠體 14px",
