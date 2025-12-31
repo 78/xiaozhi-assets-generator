@@ -83,19 +83,44 @@
   },
   "wakewordConfig": {
     "title": "Wake Word Configuration",
-    "description": "Select an appropriate wake word model based on your chip model.",
+    "description": "Select a preset wake word model or customize it using a command recognition model.",
     "supportWakeNet9": "Your chip supports WakeNet9 models.",
     "supportWakeNet9s": "Your chip supports WakeNet9s models.",
     "notSupported": "Your chip does not support wake word functionality.",
     "notice": "Note:",
     "unsupportedMessage": "{chipModel} chip does not support wake word functionality. If you need to use wake words, please select ESP32-S3, ESP32-P4, or ESP32-C3/C5/C6 chips.",
+    "noWakeword": "No Wake Word",
+    "presetWakeword": "Preset Wake Word",
+    "customWakeword": "Custom Wake Word",
     "selectWakeword": "Select Wake Word",
-    "placeholder": "No wake word",
+    "placeholder": "Select wake word...",
+    "customSettings": "Custom Wake Word Settings",
+    "wakewordName": "Wake Word Name",
+    "wakewordNamePlaceholder": "e.g., Xiaozhi / Potato",
+    "wakewordCommand": "Wake Command",
+    "wakewordCommandPlaceholderCN": "Pinyin separated by spaces, e.g., ni hao xiao zhi",
+    "wakewordCommandPlaceholderEN": "English words, no punctuation, e.g., HELLO POTATO",
+    "threshold": "Sensitivity Threshold (0-100)",
+    "thresholdDesc": "Lower is more sensitive, default 20",
+    "duration": "Recognition Duration",
+    "durationDesc": "Maximum duration for command recognition",
+    "selectModel": "Select Recognition Model",
+    "mn6cn": "MultiNet6 (Chinese)",
+    "mn6en": "MultiNet6 (English)",
+    "mn7cn": "MultiNet7 (Chinese)",
+    "mn7en": "MultiNet7 (English)",
+    "errors": {
+      "nameRequired": "Please enter wake word name",
+      "commandRequired": "Please enter wake command",
+      "noPunctuation": "Command cannot contain punctuation",
+      "durationRange": "Duration must be between 500-10000ms"
+    },
     "tips": {
       "tipLabel": "Tip:",
-      "optional": "Wake words are optional. Without wake words, the device cannot be voice-activated.",
+      "optional": "Wake words are optional. If disabled, the device cannot be voice-activated.",
       "wakeNet9sOnly": "C3/C5/C6 chips only support WakeNet9s lightweight models.",
-      "wakeNet9Full": "S3/P4 chips support complete WakeNet9 models with more choices."
+      "wakeNet9Full": "S3/P4 chips support complete WakeNet9 models with more choices.",
+      "customSupport": "Custom wake words use MultiNet models, currently only supported on ESP32-S3."
     }
   },
   "errors": {

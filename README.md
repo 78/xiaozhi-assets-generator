@@ -28,62 +28,36 @@
 
 #### Tab 1: 唤醒词配置
 
-对于 C3/C6 芯片，只支持 WakeNet9s 的唤醒词模型。
-对于 S3/P4 芯片，只支持 WakeNet9 的唤醒词模型。
+目前支持两种唤醒词配置方式：**预设唤醒词**和**自定义唤醒词**。
 
-列表如下，第一列为唤醒词名称，其他列为值。
+##### 1. 预设唤醒词 (WakeNet)
 
-|wake words       |             WakeNet9s           |  WakeNet9              | 
-|:--------------- | :------------------------------:| :---------------------:| 
-|Hi,乐鑫           |  wn9s_hilexin                   | wn9_hilexin            | 
-|Hi,ESP           |  wn9s_hiesp                      | wn9_hiesp              | 
-|你好小智          |  wn9s_nihaoxiaozhi              | wn9_nihaoxiaozhi_tts   |
-|Hi,Jason         |   wn9s_hijason_tts2              | wn9_hijason_tts2       |
-|你好喵伴          |                                 | wn9_nihaomiaoban_tts2   |
-|小爱同学          |                                 | wn9_xiaoaitongxue      | 
-|Hi,M Five        |                                  | wn9_himfive            | 
-|Alexa            |                                  | wn9_alexa              | 
-|Jarvis           |                                  | wn9_jarvis_tts         | 
-|Computer         |                                  | wn9_computer_tts       |
-|Hey,Willow       |                                  | wn9_heywillow_tts      | 
-|Sophia           |                                  | wn9_sophia_tts         |
-|Mycroft          |                                  | wn9_mycroft_tts        |
-|Hey,Printer      |                                  | wn9_heyprinter_tts     |
-|Hi,Joy           |                                  | wn9_hijoy_tts          |
-|Hey,Wand         |                                  | wn9_heywanda_tts       |
-|Astrolabe        |                                  | wn9_astrolabe_tts      |
-|Hey,Ily          |                                  | wn9_heyily_tts2        |
-|Hi,Jolly         |                                  | wn9_hijolly_tts2        |
-|Hi,Fairy         |                                  | wn9_hifairy_tts2        |
-|Blue Chip        |                                  | wn9_bluechip_tts2        |
-|Hi,Andy          |                                  | wn9_hiandy_tts2        |
-|Hi,Wall E/Hi,瓦力|                                  | wn9_hiwalle_tts2       |
-|你好小鑫         |                                  | wn9_nihaoxiaoxin_tts   |
-|小美同学         |                                  | wn9_xiaomeitongxue_tts |
-|Hi,小星          |                                  | wn9_hixiaoxing_tts     |
-|小龙小龙         |                                  | wn9_xiaolongxiaolong_tts    |
-|喵喵同学         |                                  | wn9_miaomiaotongxue_tts|
-|Hi,喵喵          |                                  | wn9_himiaomiao_tts     |
-|Hi,Lily/Hi,莉莉  |                                  | wn9_hilili_tts         |
-|Hi,Telly/Hi,泰力 |                                  | wn9_hitelly_tts        |
-|小滨小滨/小冰小冰|                                  | wn9_xiaobinxiaobin_tts |
-|Hi,小巫          |                                  | wn9_haixiaowu_tts      |
-|小鸭小鸭         |                                  | wn9_xiaoyaxiaoya_tts2  |
-|璃奈板           |                                  | wn9_linaiban_tts2      |
-|小酥肉           |                                  | wn9_xiaosurou_tts2      |
-|小宇同学         |                                  | wn9_xiaoyutongxue_tts2  |
-|小明同学         |                                  | wn9_xiaomingtongxue_tts2|
-|小康同学         |                                  | wn9_xiaokangtongxue_tts2|
-|小箭小箭         |                                  | wn9_xiaojianxiaojian_tts2|
-|小特小特         |                                  | wn9_xiaotexiaote_tts2|
-|你好小益         |                                  | wn9_nihaoxiaoyi_tts2|
-|你好百应         |                                  | wn9_nihaobaiying_tts2|
-|小鹿小鹿         |                                  | wn9_xiaoluxiaolu_tts2|
-|你好东东         |                                  | wn9_nihaodongdong_tts2|
-|你好小安         |                                  | wn9_nihaoxiaoan_tts2|
-|你好小脉         |                                  | wn9_ni3hao3xiao3mai4_tts2|
+对于 C3/C6 芯片，只支持 WakeNet9s 的唤醒词模型。对于 S3/P4 芯片，只支持 WakeNet9 的唤醒词模型。
 
-唤醒词参考 `spiffs_assets/pack_model.py` 把 `share/wakenet_model` 下对应的模型目录打包成 srmodels.bin
+常用预设列表如下：
+
+| 唤醒词           | WakeNet9s (C3/C6)      | WakeNet9 (S3/P4)          |
+| :--------------- | :--------------------: | :-----------------------: |
+| Hi,乐鑫          | wn9s_hilexin           | wn9_hilexin               |
+| Hi,ESP           | wn9s_hiesp             | wn9_hiesp                 |
+| 你好小智         | wn9s_nihaoxiaozhi      | wn9_nihaoxiaozhi_tts      |
+| Hi,Jason         | wn9s_hijason_tts2      | wn9_hijason_tts2          |
+| 小爱同学         | -                      | wn9_xiaoaitongxue         |
+| 嗨小欧           | -                      | wn9_hai1xiao3ou1_tts3     |
+| 你好小瑞         | -                      | wn9_ni3hao3xiao3rui4_tts3 |
+
+唤醒词参考 `spiffs_assets/pack_model.py` 把 `share/wakenet_model` 下对应的模型目录打包成 srmodels.bin。
+
+##### 2. 自定义唤醒词 (MultiNet)
+
+目前仅 **ESP32-S3** 芯片支持自定义唤醒词。用户可以输入自定义的中文或英文命令词：
+
+- **中文支持**：使用 `mn6_cn` 或 `mn7_cn` 模型，支持拼音输入（如：`ni hao xiao zhi`）。
+- **英文支持**：使用 `mn6_en` 或 `mn7_en` 模型，支持纯英文单词。
+- **配置参数**：可自定义阈值（Threshold，0-100）和超时时间（Duration）。
+
+自定义唤醒词功能会根据用户定义的命令词生成 MultiNet 配置，并包含在 assets.bin 中。
+
 
 #### Tab 2：字体配置
 
@@ -167,7 +141,9 @@
 
 1. 加载用户配置
 2. 处理字体文件（预设字体或自定义字体转换）
-3. 从 `share/wakenet_model/` 加载并打包唤醒词模型
+3. 处理唤醒词模型：
+   - **预设模式**：从 `public/static/wakenet_model/` 加载对应模型并打包。
+   - **自定义模式**：从 `public/static/multinet_model/` 加载 MultiNet 模型，并根据用户定义的命令词生成配置。
 4. 处理表情图片（预设或自定义）
 5. 处理背景图片并转换为RGB565格式
 6. 生成 index.json 索引文件
@@ -208,7 +184,13 @@
             "file": "sleepy.png"
         },
         ...
-    ]
+    ],
+    "multinet": {
+        "model": "mn6_cn",
+        "command": "ni hao xiao zhi",
+        "threshold": 20,
+        "duration": 3000
+    }
 }
 ```
 

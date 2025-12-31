@@ -333,15 +333,25 @@ const hasSelectedFiles = computed(() => {
 })
 
 const getWakewordName = () => {
-  // 简化的唤醒词名称映射
-  const names = {
-    'wn9s_hilexin': 'Hi,乐鑫',
-    'wn9s_hiesp': 'Hi,ESP',
-    'wn9s_nihaoxiaozhi': '你好小智',
-    'wn9_nihaoxiaozhi_tts': '你好小智',
-    'wn9_alexa': 'Alexa'
+  const wakeword = props.config.theme.wakeword
+  if (!wakeword || wakeword.type === 'none') return t('wakewordConfig.noWakeword')
+  
+  if (wakeword.type === 'preset') {
+    const names = {
+      'wn9s_hilexin': 'Hi,乐鑫',
+      'wn9s_hiesp': 'Hi,ESP',
+      'wn9s_nihaoxiaozhi': '你好小智',
+      'wn9_nihaoxiaozhi_tts': '你好小智',
+      'wn9_alexa': 'Alexa'
+    }
+    return names[wakeword.preset] || wakeword.preset
   }
-  return names[props.config.theme.wakeword] || props.config.theme.wakeword
+  
+  if (wakeword.type === 'custom') {
+    return wakeword.custom.name || t('wakewordConfig.customWakeword')
+  }
+  
+  return t('wakewordConfig.noWakeword')
 }
 
 const getFontName = () => {
@@ -376,14 +386,15 @@ const initializeFileList = () => {
   })
 
   // 添加唤醒词模型（如果有配置）
-  if (props.config.theme.wakeword) {
+  const wakeword = props.config.theme.wakeword
+  if (wakeword && wakeword.type !== 'none') {
     fileList.value.push({
       id: 'srmodels',
       name: 'srmodels.bin',
-      description: '唤醒词模型',
+      description: wakeword.type === 'custom' ? '自定义命令词模型' : '预设唤醒词模型',
       icon: MicIcon,
       iconColor: 'text-green-500',
-      size: '~300KB'
+      size: wakeword.type === 'custom' ? '~1.2MB' : '~300KB'
     })
   }
 

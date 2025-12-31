@@ -12,3 +12,9 @@ https://github.com/twitter/twemoji
 The wakenet model weights are copied from the ESP-SR repo.
 
 https://github.com/espressif/esp-sr/tree/master/model/wakenet_model
+
+### Multinet models
+
+The multinet model weights are copied from the ESP-SR repo.
+
+https://github.com/espressif/esp-sr/tree/master/model/multinet_model

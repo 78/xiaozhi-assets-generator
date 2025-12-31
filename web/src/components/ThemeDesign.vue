@@ -175,6 +175,30 @@ const localValue = computed({
 })
 
 const handleNext = () => {
+  // 校验唤醒词配置
+  const wakeword = props.modelValue.wakeword
+  if (wakeword.type === 'custom') {
+    if (!wakeword.custom.name?.trim()) {
+      alert(t('wakewordConfig.errors.nameRequired'))
+      return
+    }
+    if (!wakeword.custom.command?.trim()) {
+      alert(t('wakewordConfig.errors.commandRequired'))
+      return
+    }
+    if (!wakeword.custom.duration || wakeword.custom.duration < 500 || wakeword.custom.duration > 10000) {
+      alert(t('wakewordConfig.errors.durationRange'))
+      return
+    }
+  }
+
+  // 校验字体配置
+  const font = props.modelValue.font
+  if (font.type === 'custom' && !font.custom?.file) {
+    alert(t('fontConfig.selectValidFontFile'))
+    return
+  }
+
   emit('next')
 }
 

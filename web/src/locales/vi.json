@@ -83,19 +83,44 @@
   },
   "wakewordConfig": {
     "title": "Cấu hình từ đánh thức",
-    "description": "Chọn mô hình từ đánh thức phù hợp dựa trên mô hình chip của bạn.",
+    "description": "Chọn mô hình từ đánh thức đặt sẵn hoặc tùy chỉnh thông qua mô hình lệnh.",
     "supportWakeNet9": "Chip của bạn hỗ trợ mô hình WakeNet9.",
     "supportWakeNet9s": "Chip của bạn hỗ trợ mô hình WakeNet9s.",
     "notSupported": "Chip của bạn không hỗ trợ chức năng từ đánh thức.",
     "notice": "Lưu ý:",
     "unsupportedMessage": "Chip {chipModel} không hỗ trợ chức năng từ đánh thức. Nếu bạn cần sử dụng từ đánh thức, vui lòng chọn chip ESP32-S3, ESP32-P4 hoặc ESP32-C3/C5/C6.",
+    "noWakeword": "Tắt đánh thức",
+    "presetWakeword": "Mặc định",
+    "customWakeword": "Tùy chỉnh",
     "selectWakeword": "Chọn từ đánh thức",
-    "placeholder": "Không có từ đánh thức",
+    "placeholder": "Chọn một từ...",
+    "customSettings": "Cài đặt từ đánh thức tùy chỉnh",
+    "wakewordName": "Tên từ đánh thức",
+    "wakewordNamePlaceholder": "VD: Xiaozhi / Potato",
+    "wakewordCommand": "Lệnh đánh thức",
+    "wakewordCommandPlaceholderCN": "Pinyin cách nhau bằng dấu cách, VD: ni hao xiao zhi",
+    "wakewordCommandPlaceholderEN": "Từ tiếng Anh, không dấu câu, VD: HELLO POTATO",
+    "threshold": "Ngưỡng nhạy (0-100)",
+    "thresholdDesc": "Càng nhỏ càng nhạy, mặc định là 20",
+    "duration": "Thời gian nhận diện",
+    "durationDesc": "Thời gian tối đa để nhận diện lệnh",
+    "selectModel": "Chọn mô hình nhận diện",
+    "mn6cn": "MultiNet6 (Tiếng Trung)",
+    "mn6en": "MultiNet6 (Tiếng Anh)",
+    "mn7cn": "MultiNet7 (Tiếng Trung)",
+    "mn7en": "MultiNet7 (Tiếng Anh)",
+    "errors": {
+      "nameRequired": "Vui lòng nhập tên từ đánh thức",
+      "commandRequired": "Vui lòng nhập lệnh đánh thức",
+      "noPunctuation": "Lệnh không thể chứa dấu câu",
+      "durationRange": "Thời gian phải từ 500-10000ms"
+    },
     "tips": {
       "tipLabel": "Mẹo:",
-      "optional": "Từ đánh thức là tùy chọn. Nếu không cấu hình từ đánh thức, thiết bị sẽ không thể đánh thức bằng giọng nói.",
+      "optional": "Từ đánh thức là tùy chọn. Nếu tắt, thiết bị sẽ không thể đánh thức bằng giọng nói.",
       "wakeNet9sOnly": "Chip C3/C5/C6 chỉ hỗ trợ mô hình nhẹ WakeNet9s.",
-      "wakeNet9Full": "Chip S3/P4 hỗ trợ mô hình WakeNet9 hoàn chỉnh với nhiều lựa chọn hơn."
+      "wakeNet9Full": "Chip S3/P4 hỗ trợ mô hình WakeNet9 hoàn chỉnh với nhiều lựa chọn hơn.",
+      "customSupport": "Từ đánh thức tùy chỉnh sử dụng mô hình MultiNet, hiện chỉ hỗ trợ chip ESP32-S3."
     }
   },
   "errors": {

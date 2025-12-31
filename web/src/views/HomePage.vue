@@ -140,7 +140,17 @@ const config = ref({
     }
   },
   theme: {
-    wakeword: '',
+    wakeword: {
+      type: 'none',
+      preset: '',
+      custom: {
+        name: '',
+        command: '',
+        threshold: 20,
+        duration: 3000,
+        model: 'mn6_cn'
+      }
+    },
     font: {
       type: 'none',
       preset: '',
@@ -515,7 +525,16 @@ const confirmReset = async () => {
     config.value = {
       chip: currentChipConfig,
       theme: {
-        wakeword: '',
+        wakeword: {
+          type: 'none',
+          preset: '',
+          custom: {
+            name: '',
+            command: '',
+            threshold: 20,
+            model: 'mn6_cn'
+          }
+        },
         font: {
           type: 'none',
           preset: '',

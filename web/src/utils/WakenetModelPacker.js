@@ -51,23 +51,34 @@ class WakenetModelPacker {
   }
 
   /**
-   * 从share/wakenet_model目录加载模型
-   * @param {string} modelName - 模型名称 (例如: wn9s_nihaoxiaozhi)
+   * 从share/wakenet_model或multinet_model目录加载模型
+   * @param {string} modelName - 模型名称 (例如: wn9s_nihaoxiaozhi 或 mn6_cn)
    * @returns {Promise<boolean>} 加载是否成功
    */
   async loadModelFromShare(modelName) {
     try {
-      // 所有wakenet模型都使用相同的文件名
-      const modelFiles = [
-        '_MODEL_INFO_',
-        'wn9_data',
-        'wn9_index'
-      ]
+      let modelFiles = []
+      let baseUrl = ''
+
+      if (modelName.startsWith('wn9')) {
+        // wakenet模型
+        modelFiles = ['_MODEL_INFO_', 'wn9_data', 'wn9_index']
+        baseUrl = `./static/wakenet_model/${modelName}/`
+      } else if (modelName.startsWith('mn6') || modelName.startsWith('mn7')) {
+        // multinet模型
+        modelFiles = ['_MODEL_INFO_', `${modelName.substring(0, 3)}_data`, `${modelName.substring(0, 3)}_index`, 'vocab']
+        baseUrl = `./static/multinet_model/${modelName}/`
+        
+        // 同时加载 fst 模型文件 (Multinet 6/7 必需)
+        await this.loadFSTModel()
+      } else {
+        throw new Error(`Unknown model type: ${modelName}`)
+      }
 
       let loadedFiles = 0
       for (const fileName of modelFiles) {
         try {
-          const response = await fetch(`./static/wakenet_model/${modelName}/${fileName}`)
+          const response = await fetch(`${baseUrl}${fileName}`)
           if (response.ok) {
             const fileData = await response.arrayBuffer()
             this.addModelFile(modelName, fileName, fileData)
@@ -83,6 +94,45 @@ class WakenetModelPacker {
       return loadedFiles === modelFiles.length
     } catch (error) {
       console.error(`加载模型失败: ${modelName}`, error)
+      return false
+    }
+  }
+
+  /**
+   * 加载 FST 模型文件 (Multinet 6/7 必需)
+   * @returns {Promise<boolean>} 是否加载成功
+   */
+  async loadFSTModel() {
+    try {
+      const modelName = 'fst'
+      
+      // 如果已经加载过，直接返回
+      if (this.models.has(modelName)) {
+        return true
+      }
+
+      const modelFiles = ['commands_cn.txt', 'commands_en.txt']
+      const baseUrl = `./static/multinet_model/fst/`
+      
+      let loadedFiles = 0
+      for (const fileName of modelFiles) {
+        try {
+          const response = await fetch(`${baseUrl}${fileName}`)
+          if (response.ok) {
+            const fileData = await response.arrayBuffer()
+            this.addModelFile(modelName, fileName, fileData)
+            loadedFiles++
+          } else {
+            console.warn(`无法加载 FST 文件: ${fileName}, status: ${response.status}`)
+          }
+        } catch (error) {
+          console.warn(`加载 FST 文件失败: ${fileName}`, error)
+        }
+      }
+      
+      return loadedFiles > 0
+    } catch (error) {
+      console.error('加载 FST 模型失败', error)
       return false
     }
   }

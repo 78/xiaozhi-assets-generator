@@ -316,17 +316,28 @@ class AssetsBuilder {
     const chipModel = this.config.chip.model
     const wakeword = this.config.theme.wakeword
     
-    if (!wakeword) return null
+    if (!wakeword || wakeword.type === 'none') return null
 
-    // 根据芯片型号确定唤醒词模型类型
-    const isC3OrC6 = chipModel === 'esp32c3' || chipModel === 'esp32c6'
-    const modelType = isC3OrC6 ? 'WakeNet9s' : 'WakeNet9'
-    
-    return {
-      name: wakeword,
-      type: modelType,
-      filename: 'srmodels.bin'
+    if (wakeword.type === 'preset') {
+      // 根据芯片型号确定唤醒词模型类型
+      const isC3OrC6 = chipModel === 'esp32c3' || chipModel === 'esp32c6'
+      const modelType = isC3OrC6 ? 'WakeNet9s' : 'WakeNet9'
+      
+      return {
+        type: modelType,
+        name: wakeword.preset,
+        filename: 'srmodels.bin'
+      }
+    } else if (wakeword.type === 'custom') {
+      return {
+        type: 'MultiNet',
+        name: wakeword.custom.model,
+        filename: 'srmodels.bin',
+        custom: wakeword.custom
+      }
     }
+    
+    return null
   }
 
   /**
@@ -511,6 +522,23 @@ class AssetsBuilder {
     const wakewordInfo = this.getWakewordModelInfo()
     if (wakewordInfo) {
       indexData.srmodels = wakewordInfo.filename
+      
+      // 如果是自定义唤醒词，添加 multinet_model 配置
+      if (wakewordInfo.type === 'MultiNet' && wakewordInfo.custom) {
+        const custom = wakewordInfo.custom
+        indexData.multinet_model = {
+          language: custom.model.includes('_en') ? 'en' : 'cn',
+          duration: custom.duration || 3000,
+          threshold: custom.threshold / 100.0,
+          commands: [
+            {
+              command: custom.command,
+              text: custom.name,
+              action: "wake"
+            }
+          ]
+        }
+      }
     }
 
     // 添加字体信息
@@ -555,7 +583,8 @@ class AssetsBuilder {
         type: 'wakeword',
         name: wakewordInfo.name,
         filename: wakewordInfo.filename,
-        modelType: wakewordInfo.type
+        modelType: wakewordInfo.type,
+        isCustom: wakewordInfo.type === 'MultiNet'
       })
     }
 

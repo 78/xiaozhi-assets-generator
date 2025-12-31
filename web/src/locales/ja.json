@@ -83,19 +83,44 @@
   },
   "wakewordConfig": {
     "title": "ウェイクワード設定",
-    "description": "チップモデルに基づいて適切なウェイクワードモデルを選択してください。",
+    "description": "プリセットのウェイクワードを選択するか、コマンド認識モデルを使用してカスタマイズします。",
     "supportWakeNet9": "チップはWakeNet9モデルをサポートしています。",
     "supportWakeNet9s": "チップはWakeNet9sモデルをサポートしています。",
     "notSupported": "チップはウェイクワード機能をサポートしていません。",
     "notice": "注意:",
     "unsupportedMessage": "{chipModel}チップはウェイクワード機能をサポートしていません。ウェイクワードを使用する必要がある場合は、ESP32-S3、ESP32-P4、またはESP32-C3/C5/C6チップを選択してください。",
+    "noWakeword": "起動を無効にする",
+    "presetWakeword": "プリセット",
+    "customWakeword": "カスタム",
     "selectWakeword": "ウェイクワードを選択",
-    "placeholder": "ウェイクワードなし",
+    "placeholder": "選択してください...",
+    "customSettings": "カスタムウェイクワード設定",
+    "wakewordName": "ウェイクワード名",
+    "wakewordNamePlaceholder": "例：小智 / Potato",
+    "wakewordCommand": "ウェイクコマンド",
+    "wakewordCommandPlaceholderCN": "ピンインをスペースで区切る。例：ni hao xiao zhi",
+    "wakewordCommandPlaceholderEN": "英語の単語。句読点は含めない。例：HELLO POTATO",
+    "threshold": "感度しきい値 (0-100)",
+    "thresholdDesc": "値が小さいほど感度が高くなります。デフォルトは20",
+    "duration": "認識時間",
+    "durationDesc": "コマンド認識の最大継続時間",
+    "selectModel": "認識モデルを選択",
+    "mn6cn": "MultiNet6 (中国語)",
+    "mn6en": "MultiNet6 (英語)",
+    "mn7cn": "MultiNet7 (中国語)",
+    "mn7en": "MultiNet7 (英語)",
+    "errors": {
+      "nameRequired": "ウェイクワード名を入力してください",
+      "commandRequired": "ウェイクコマンドを入力してください",
+      "noPunctuation": "コマンドに句読点を含めることはできません",
+      "durationRange": "時間は500〜10000msの間で設定してください"
+    },
     "tips": {
       "tipLabel": "ヒント:",
-      "optional": "ウェイクワードはオプションです。ウェイクワードを設定しない場合、デバイスは音声で起動できません。",
+      "optional": "ウェイクワードはオプションです。無効にすると、デバイスは音声で起動できなくなります。",
       "wakeNet9sOnly": "C3/C5/C6チップはWakeNet9s軽量モデルしかサポートしていません。",
-      "wakeNet9Full": "S3/P4チップは完全なWakeNet9モデルをサポートし、より多くの選択肢があります。"
+      "wakeNet9Full": "S3/P4チップは完全なWakeNet9モデルをサポートし、より多くの選択肢があります。",
+      "customSupport": "カスタムウェイクワードはMultiNetモデルを使用しており、現在はESP32-S3チップのみをサポートしています。"
     }
   },
   "errors": {

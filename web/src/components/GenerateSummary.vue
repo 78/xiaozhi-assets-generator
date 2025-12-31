@@ -492,11 +492,22 @@ const changeEmotion = (emotionKey) => {
 
 // 配置摘要方法
 const getWakewordName = () => {
-  const names = {
-    'wn9s_hilexin': 'Hi,乐鑫', 'wn9s_hiesp': 'Hi,ESP', 'wn9s_nihaoxiaozhi': '你好小智',
-    'wn9_nihaoxiaozhi_tts': '你好小智', 'wn9_alexa': 'Alexa', 'wn9_jarvis_tts': 'Jarvis'
+  const wakeword = props.config.theme.wakeword
+  if (!wakeword || wakeword.type === 'none') return t('wakewordConfig.noWakeword')
+  
+  if (wakeword.type === 'preset') {
+    const names = {
+      'wn9s_hilexin': 'Hi,乐鑫', 'wn9s_hiesp': 'Hi,ESP', 'wn9s_nihaoxiaozhi': '你好小智',
+      'wn9_nihaoxiaozhi_tts': '你好小智', 'wn9_alexa': 'Alexa', 'wn9_jarvis_tts': 'Jarvis'
+    }
+    return names[wakeword.preset] || wakeword.preset
   }
-  return names[props.config.theme.wakeword] || props.config.theme.wakeword
+  
+  if (wakeword.type === 'custom') {
+    return wakeword.custom.name || t('wakewordConfig.customWakeword')
+  }
+  
+  return t('wakewordConfig.noWakeword')
 }
 
 const getFontName = () => {

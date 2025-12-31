@@ -358,19 +358,44 @@
   },
   "wakewordConfig": {
     "title": "唤醒词配置",
-    "description": "根据您的芯片型号选择合适的唤醒词模型。",
+    "description": "选择预设唤醒词模型或通过命令词模型自定义唤醒词。",
     "supportWakeNet9": "您的芯片支持 WakeNet9 模型。",
     "supportWakeNet9s": "您的芯片支持 WakeNet9s 模型。",
     "notSupported": "您的芯片不支持唤醒词功能。",
     "notice": "注意：",
     "unsupportedMessage": "{chipModel} 芯片不支持唤醒词功能。如需使用唤醒词，请选择 ESP32-S3、ESP32-P4 或 ESP32-C3/C5/C6 芯片。",
+    "noWakeword": "关闭唤醒",
+    "presetWakeword": "预设唤醒词",
+    "customWakeword": "自定义唤醒词",
     "selectWakeword": "选择唤醒词",
-    "placeholder": "无唤醒词",
+    "placeholder": "选择唤醒词...",
+    "customSettings": "自定义唤醒词设置",
+    "wakewordName": "唤醒词名称",
+    "wakewordNamePlaceholder": "例如：小智 / Potato",
+    "wakewordCommand": "唤醒命令",
+    "wakewordCommandPlaceholderCN": "拼音空格隔开，例如：ni hao xiao zhi",
+    "wakewordCommandPlaceholderEN": "英文单词，不能包含标点，例如：HELLO POTATO",
+    "threshold": "灵敏度阈值 (0-100)",
+    "thresholdDesc": "越小越灵敏，默认 20",
+    "duration": "识别时长",
+    "durationDesc": "命令词最长持续时间",
+    "selectModel": "选择识别模型",
+    "mn6cn": "MultiNet6 (中文)",
+    "mn6en": "MultiNet6 (英文)",
+    "mn7cn": "MultiNet7 (中文)",
+    "mn7en": "MultiNet7 (英文)",
+    "errors": {
+      "nameRequired": "请输入唤醒词名称",
+      "commandRequired": "请输入唤醒命令",
+      "noPunctuation": "命令不能包含标点符号",
+      "durationRange": "时长需在 500-10000ms 之间"
+    },
     "tips": {
       "tipLabel": "提示：",
-      "optional": "唤醒词是可选的，不配置唤醒词时设备将无法语音唤醒。",
+      "optional": "唤醒词是可选的，关闭后设备将无法通过语音唤醒。",
       "wakeNet9sOnly": "C3/C5/C6 芯片仅支持 WakeNet9s 轻量级模型。",
-      "wakeNet9Full": "S3/P4 芯片支持完整的 WakeNet9 模型，选择更多。"
+      "wakeNet9Full": "S3/P4 芯片支持完整的 WakeNet9 模型，选择更多。",
+      "customSupport": "自定义唤醒词使用 MultiNet 模型实现，目前仅支持 ESP32-S3 芯片。"
     }
   }
 }
