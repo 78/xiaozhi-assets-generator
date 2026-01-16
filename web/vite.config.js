@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
 export default defineConfig({
-  base: process.env.VITE_BASE_URL || '/tools/assets-generator/',
+  base: process.env.VITE_BASE_URL || '/generator',
   plugins: [vue()],
   resolve: {
     alias: {
