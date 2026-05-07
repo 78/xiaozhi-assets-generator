@@ -1,4 +1,5 @@
 import en from './en.json'
+import ptBR from './pt-BR.json'
 import zhCN from './zh-CN.json'
 import zhTW from './zh-TW.json'
 import ja from './ja.json'
@@ -6,6 +7,7 @@ import vi from './vi.json'
 
 export const messages = {
   en,
+  'pt-BR': ptBR,
   'zh-CN': zhCN,
   'zh-TW': zhTW,
   ja,
@@ -14,6 +16,7 @@ export const messages = {
 
 export const languageOptions = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
   { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
   { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼' },
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
@@ -24,6 +27,7 @@ export const languageOptions = [
 export function getBrowserLanguage() {
   const browserLang = navigator.language || navigator.userLanguage
   const langMap = {
+    'pt-BR': 'pt-BR',
     'zh-CN': 'zh-CN',
     'zh-TW': 'zh-TW',
     'zh-HK': 'zh-TW',
