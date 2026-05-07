@@ -182,40 +182,40 @@ O arquivo assets.bin gerado contém um arquivo de índice chamado index.json, cu
 Exemplo 1:
 ```json
 {
-   "versão": 1,
+    "version": 1,
     "chip_model": "esp32s3",
     "display_config": {
-       "largura": 320,
-       "altura": 240,
-       "monocromático": false,
-       "cor": "RGB565"
+        "width": 320,
+        "height": 240,
+        "monochrome": false,
+        "color": "RGB565"
     },
     "srmodels": "srmodels.bin",
     "text_font": "font_puhui_common_30_4.bin",
-   "pele": {
-      "luz": {
+    "skin": {
+        "light": {
             "text_color": "#000000",
-         "cor_de_fundo": "#FFFFFF",
+            "background_color": "#FFFFFF",
             "background_image": "background_light.raw"
         },
-      "escuro": {
+        "dark": {
             "text_color": "#FFFFFF",
-         "cor_de_fundo": "#121212",
+            "background_color": "#121212",
             "background_image": "background_dark.raw"
         }
     },
-   "coleção_emoji": [
+    "emoji_collection": [
         {
-           "nome": "sonolento",
-           "arquivo": "sleepy.png"
+            "name": "sonolento",
+            "file": "sleepy.png"
         },
         ...
     ],
     "multinet": {
-       "modelo": "mn6_cn",
-       "comando": "ni hao xiao zhi",
-       "limiar": 20,
-       "duração": 3000
+        "model": "mn6_cn",
+        "command": "ni hao xiao zhi",
+        "threshold": 20,
+        "duration": 3000
     }
 }
 ```
@@ -223,32 +223,33 @@ Exemplo 1:
 Exemplo 2:
 ```json
 {
-   "versão": 1,
+    "version": 1,
     "chip_model": "esp32c3",
     "display_config": {
-       "largura": 240,
-       "altura": 240,
-       "monocromático": false,
-       "cor": "RGB565"
+        "width": 240,
+        "height": 240,
+        "monochrome": false,
+        "color": "RGB565"
     },
     "srmodels": "srmodels.bin",
     "text_font": "font_puhui_common_16_4.bin",
-   "pele": {
-      "luz": {
+    "skin": {
+        "light": {
             "text_color": "#000000",
-         "cor_de_fundo": "#FFFFFF",
+            "background_color": "#FFFFFF",
         },
-      "escuro": {
+        "dark": {
             "text_color": "#FFFFFF",
-         "cor_de_fundo": "#121212"
+            "background_color": "#121212"
         }
     },
-   "coleção_emoji": [
+    "emoji_collection": [
         {
-           "nome": "sonolento",
-           "arquivo": "sleepy.png"
+            "name": "sonolento",
+            "file": "sleepy.png"
         },
         ...
     ]
 }
+```
 ```
